@@ -1,0 +1,1 @@
+Репозиторий создан для сохранения различных данных по курсу [netology DevOps-инженер](https://netology.ru/programs/devops).
