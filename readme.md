@@ -2,5 +2,5 @@
 
 ## Homeworks
 
-* [1.1](/src/homework/1.1) 
+* [1.1 Введение в DevOps](/src/homework/1.1) 
 * [2.1 Системы контроля версий](/src/homework/2.1)
