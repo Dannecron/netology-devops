@@ -7,3 +7,5 @@
 * [1.1 Введение в DevOps](/src/homework/1.1) 
 * [2.1 Системы контроля версий](/src/homework/2.1)
 * [2.2 Основы Git](/src/homework/2.2)
+* [2.3 Ветвления в Git](/src/homework/2.3)
+* [2.4 Ветвления в Git](/src/homework/2.4)
