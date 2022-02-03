@@ -9,3 +9,4 @@
 * [2.2 Основы Git](/src/homework/2.2)
 * [2.3 Ветвления в Git](/src/homework/2.3)
 * [2.4 Ветвления в Git](/src/homework/2.4)
+* [3.1 Работа в терминале, лекция 1](/src/homework/3.1)
