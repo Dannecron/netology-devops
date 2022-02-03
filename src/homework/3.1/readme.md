@@ -4,22 +4,22 @@
 
 1. Какие ресурсы выделены для виртуальной машины по умолчанию?
 
-```
-RAM: 1024 MB
-CPU: 2
-VRAM: 4 MB
-HDD: 64GB
-```
+    ```
+    RAM: 1024 MB
+    CPU: 2
+    VRAM: 4 MB
+    HDD: 64GB
+    ```
 
 2. Как добавить оперативной памяти или ресурсов процессора виртуальной машине?
 
-В конфигурацию `Vargrantfile` необходимо добавить следующие строки:
-```
-config.vm.provider "virtualbox" do |v|
-  v.memory = 2048
-  v.cpus = 4
-end
-```
+    В конфигурацию `Vargrantfile` необходимо добавить следующие строки:
+    ```
+    config.vm.provider "virtualbox" do |v|
+      v.memory = 2048
+      v.cpus = 4
+    end
+    ```
 
 3. `man bash`
     1. какой переменной можно задать длину журнала history, и на какой строчке manual это описывается?
@@ -48,21 +48,21 @@ end
     
         Возвращает 1, если `/tmp` существует и это директория, или 0, в ином случае.
 
-    6. Добейтесь в выводе type -a bash в виртуальной машине наличия первым пунктом в списке.
+4. Добейтесь в выводе type -a bash в виртуальной машине наличия первым пунктом в списке.
     
-        Подобного можно добиться, сделав три шага:
-        * Создать новую директорию `mkdir /tmp/new_path_directory`
-        * Сделать символическую ссылку для баша `ln -s /usr/bin/bash /tmp/new_path_directory/bash`
-        * Изменив переменную окружения `PATH` с помощью `export PATH=/tmp/new_path_directory:${PATH}`
+    Подобного можно добиться, сделав три шага:
+    * Создать новую директорию `mkdir /tmp/new_path_directory`
+    * Сделать символическую ссылку для баша `ln -s /usr/bin/bash /tmp/new_path_directory/bash`
+    * Изменив переменную окружения `PATH` с помощью `export PATH=/tmp/new_path_directory:${PATH}`
     
-        Таким образом вывод команды будет таким, как в задаче:
-        ```shell
-        type -a bash
-        bash is /tmp/new_path_directory/bash
-        bash is /usr/bin/bash
-        bash is /bin/bash
-        ```
-    7. Чем отличается планирование команд с помощью `batch` и `at`?
+    Таким образом вывод команды будет таким, как в задаче:
+    ```shell
+    type -a bash
+    bash is /tmp/new_path_directory/bash
+    bash is /usr/bin/bash
+    bash is /bin/bash
+    ```
+5. Чем отличается планирование команд с помощью `batch` и `at`?
     
-        Ничем, это одна и та же команда.
+    Ничем, это одна и та же команда.
     
