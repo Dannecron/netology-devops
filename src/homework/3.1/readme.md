@@ -1,4 +1,5 @@
-Выполнение [домашнего задания](https://github.com/netology-code/sysadm-homeworks/blob/devsys10/03-sysadmin-01-terminal/README.md) по теме "Работа в терминале, лекция 1".
+Выполнение [домашнего задания](https://github.com/netology-code/sysadm-homeworks/blob/devsys10/03-sysadmin-01-terminal/README.md)
+по теме "Работа в терминале, лекция 1".
 
 ## Q/A
 

@@ -1,4 +1,5 @@
-Выполнение [домашнего задания](https://github.com/netology-code/sysadm-homeworks/blob/devsys10/02-git-04-tools/README.md) по теме "Инструменты Git".
+Выполнение [домашнего задания](https://github.com/netology-code/sysadm-homeworks/blob/devsys10/02-git-04-tools/README.md)
+по теме "Инструменты Git".
 
 ## Git search
 
