@@ -47,3 +47,47 @@ lr-x------ 1 vagrant vagrant 64 Feb 16 03:25 3 -> /tmp/do_not_delete_me
 ```shell
 echo "" > /proc/1988/fd/3
 ```
+
+4. Занимают ли зомби-процессы какие-то ресурсы в ОС (CPU, RAM, IO)?
+
+Нет, zombie-процессы не используют никаких ресурсов операционной системы.
+Единственное, что они занимают - это идентификатор процесса.
+
+5. На какие файлы вы увидели вызовы группы `open` за первую секунду работы утилиты `opensnoop-bpfcc`?
+
+За первую секунду работы утилиты был произведён следующий вывод:
+
+```shell
+sudo opensnoop-bpfcc
+
+PID    COMM               FD ERR PATH
+833    vminfo              5   0 /var/run/utmp
+619    dbus-daemon        -1   2 /usr/local/share/dbus-1/system-services
+619    dbus-daemon        19   0 /usr/share/dbus-1/system-services
+619    dbus-daemon        -1   2 /lib/dbus-1/system-services
+619    dbus-daemon        19   0 /var/lib/snapd/dbus-1/system-services/
+```
+
+6. Какой системный вызов использует `uname -a`? Приведите цитату из man по этому системному вызову,
+    где описывается альтернативное местоположение в /proc, где можно узнать версию ядра и релиз ОС.
+
+Утилита `uname` использует системный вызов `uname`, мануал к которому можно прочитать командой `man 2 uname`.
+
+Цитата из мануала
+> Part of the utsname information is also accessible  via  /proc/sys/ker‐nel/{ostype, hostname, osrelease, version, domainname}.
+
+PS. На виртуальной машине не было установленных мануалов для системных вызовов. Чтобы их установить,
+нужно выполнить команду `sudo apt install manpages-dev`.  
+
+7. Чем отличается последовательность команд через `;` и через `&&` в bash?
+    Есть ли смысл использовать в bash `&&`, если применить `set -e`?
+
+// todo add answer
+
+8. Из каких опций состоит режим bash `set -euxo pipefail` и почему его хорошо было бы использовать в сценариях?
+
+// todo add answer
+
+9. Используя `-o stat` для `ps`, определите, какой наиболее часто встречающийся статус у процессов в системе.
+
+// todo add answer
