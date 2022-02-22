@@ -15,3 +15,46 @@
 4. `git checkout main`
 5. `git merge new-branch`
 6. `git branch -D new-branch`
+
+# Linux operating system
+
+## Streams
+
+Базовые потоки:
+* `0` - stdin (`/proc/<pid>/fd/0`)
+* `1` - stdout (`/proc/<pid>/fd/1`)
+* `2` - stderr (`/proc/<pid>/fd/2`)
+
+Для перенаправления потока можно использовать `X>&Y`, где `X` поток, который нужно перенаправить,
+`Y` - поток, в который нужно направить данные (может быть стандартным файлом).
+
+## Kernel
+
+Версия ядра: `uname -r`.
+Версия дистрибутива: `cat /etc/issue` (debian-based), `cat /etc/redhat-release` (centos-based).
+
+Посмотреть всю конфигурацию системы: `sysctl -a`.
+
+Логи системы: `dmesg`, `syslog`.
+
+## Systemctl
+
+* `systemctl list-units --all`
+* `systemctl status <service>`
+* `systemctl cat <service>` - просмотреть файл настроек сервиса
+* `systemctl list-dependencies <service>`
+  ```shell
+  systemctl list-dependencies docker
+
+  docker.service
+  ● ├─containerd.service
+  ● ├─docker.socket
+  ● ├─system.slice
+  ● ├─network-online.target
+  ● │ └─NetworkManager-wait-online.service
+  ● └─sysinit.target
+  ●   ├─apparmor.service
+  <...>
+  ```
+* `journalctl -f`
+* `journalctl -f -u docker`
