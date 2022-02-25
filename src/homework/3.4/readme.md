@@ -148,20 +148,73 @@ sudo systemctl status prometheus_node_exporter
 В `dmesg` можно найти следующий вывод `Detected virtualization oracle.` от `systemd`. Таким образом да, можно понять, что система осознаёт,
 что находится внутри виртуальной машины, а не на физическом оборудовании.
 
-5. Как настроен sysctl fs.nr_open на системе по-умолчанию? Какой другой существующий лимит не позволит достичь такого числа?
+5. Как настроен `sysctl fs.nr_open` на системе по-умолчанию? Какой другой существующий лимит не позволит достичь такого числа?
 
-// todo
+```shell
+sysctl fs.nr_open
+fs.nr_open = 1048576
+```
+
+`fs.nr_open` является системным лимитом на количество открытых файлов для пользователя.
+Для текущей сессии bash можно посмотреть и изменить ограничение при помощи команды `ulimit -n`.
+Для конкретных групп и пользователей ограничения можно задать в файле `/etc/security/limits.conf`.
 
 6. Запустите любой долгоживущий процесс в отдельном неймспейсе процессов; покажите, что ваш процесс работает под PID 1 через `nsenter`.
 
-// todo 
+Запустим процесс `bash` в изолированном пространстве имён:
+
+```shell
+sudo unshare -f --pid --mount-proc /bin/bash
+ps aux
+
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root           1  0.2  0.3   8960  3988 pts/0    S    03:22   0:00 /bin/bash
+root           8  0.0  0.3  10616  3352 pts/0    R+   03:22   0:00 ps aux
+```
+
+Затем, в отдельной терминальной сессии подключимся к созданной сессии, для начала, найдя её в списке запущенных процессов через `ps`.
+
+```shell
+ps au --forest -C unshare
+
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+vagrant     2177  0.0  0.4   9092  4632 pts/1    Ss   03:23   0:00 -bash
+vagrant     2345  0.0  0.3  10616  3400 pts/1    R+   03:34   0:00  \_ ps au --forest -C unshare
+vagrant     2081  0.0  0.4   9092  4512 pts/0    Ss   03:21   0:00 -bash
+root        2123  0.0  0.4  11016  4660 pts/0    S    03:22   0:00  \_ sudo unshare -f --pid --mount-proc /bin/bash
+root        2124  0.0  0.0   7232   528 pts/0    S    03:22   0:00      \_ unshare -f --pid --mount-proc /bin/bash
+root        2125  0.0  0.3   8960  3988 pts/0    S+   03:22   0:00          \_ /bin/bash
+
+sudo nsenter --target 2125 --pid --mount
+
+ps aux
+
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root           1  0.0  0.3   8960  3988 pts/0    S+   03:22   0:00 /bin/bash
+root          21  0.0  0.3   8960  4000 pts/1    S    03:35   0:00 -bash
+root          52  0.0  0.3  10616  3252 pts/1    R+   03:36   0:00 ps aux
+```
 
 7. Найдите информацию о том, что такое `:(){ :|:& };:`.
   Запустите эту команду в своей виртуальной машине. Некоторое время все будет "плохо", после чего (минуты) – ОС должна стабилизироваться.
   Вызов `dmesg` расскажет, какой механизм помог автоматической стабилизации.
   Как настроен этот механизм по-умолчанию, и как изменить число процессов, которое можно создать в сессии?
 
-// todo
+Команда - это `fork bomb`, которую можно разделить на следующие блоки:
 
+```shell
+:()         # define a function named :, () defines a function in bash
+{           
+    : | :;  # the pipe needs two instances of this function, which forks two shells
+}
+;           # end function definition
+:           # run it
+```
 
+В `dmesg` можно увидеть следующее сообщение:
 
+```shell
+cgroup: fork rejected by pids controller in /user.slice/user-1000.slice/session-10.scope
+```
+
+Число процессов можно изменить с помощью команды `ulimit -u <num>`.
