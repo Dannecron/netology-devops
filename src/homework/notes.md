@@ -58,3 +58,57 @@
   ```
 * `journalctl -f`
 * `journalctl -f -u docker`
+
+## Filesystems
+
+* `stat <file>`
+
+### File types
+
+* regular file (`ls -la` - `-`)
+* directory (`ls -la` - `d`)
+* hardlink (`ls -la` - `l`)
+
+  1 файл - 1 hardlink
+  1 директрория - минимум 2 hardlink (у пустой директории - 2, +1 за каждую директорию внутри)
+
+* symlink (`ls -la` - `l`)
+* pipe (`ls -la` - `p`)
+    
+  Перенаправление потоков, только однонаправленный
+  `mkfifo <pipe>`
+
+* socket (`ls -la` - `s`)
+  
+  Двунаправленный поток, производительнее, чем pipe. Используется для взаимодействия между процессами.
+
+### File access
+
+`chown`, `chmod`, `umask`
+
+Права по умолчанию:
+* `file`: `666 - umask`
+* `dir`: `777 - umask`
+
+Дополнительные права доступа:
+* `sticky` - создание доступно всем, удаление только файлы пользователя
+* `setuid`
+* `setgid`
+
+`lsattr`/`chattr`
+
+### Raid
+
+`mdadm`
+
+### LVM 
+
+`lvs`, `vgs`, `vgdisplay`, `pvdisplay`
+
+### Partitions
+
+`fdisk -l`/`fdisk`, `sfdisk`
+
+### Filesystems
+
+`mkfs`, `mount`, `/etc/fstab`
