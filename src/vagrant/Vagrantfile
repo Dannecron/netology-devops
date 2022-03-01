@@ -29,7 +29,7 @@ Vagrant.configure("2") do |config|
   # within the machine from a port on the host machine and only allow access
   # via 127.0.0.1 to disable public access
   # config.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
-  config.vm.network "forwarded_port", guest: 19999, host: 19999, host_ip: "127.0.0.1"
+  # config.vm.network "forwarded_port", guest: 19999, host: 19999, host_ip: "127.0.0.1"
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
@@ -68,4 +68,13 @@ Vagrant.configure("2") do |config|
   #   apt-get update
   #   apt-get install -y apache2
   # SHELL
+
+  config.vm.provider :virtualbox do |vb|
+    lvm_experiments_disk0_path = "/tmp/lvm_experiments_disk0.vmdk"
+    lvm_experiments_disk1_path = "/tmp/lvm_experiments_disk1.vmdk"
+    vb.customize ['createmedium', '--filename', lvm_experiments_disk0_path, '--size', 2560]
+    vb.customize ['createmedium', '--filename', lvm_experiments_disk1_path, '--size', 2560]
+    vb.customize ['storageattach', :id, '--storagectl', 'SATA Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', lvm_experiments_disk0_path]
+    vb.customize ['storageattach', :id, '--storagectl', 'SATA Controller', '--port', 2, '--device', 0, '--type', 'hdd', '--medium', lvm_experiments_disk1_path]
+  end
 end

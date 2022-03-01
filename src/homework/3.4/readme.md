@@ -1,4 +1,4 @@
-Выполнение [домашнего задания](https://github.com/netology-code/sysadm-homeworks/blob/devsys10/03-sysadmin-03-os/README.md) 
+Выполнение [домашнего задания](https://github.com/netology-code/sysadm-homeworks/blob/devsys10/03-sysadmin-04-os/README.md) 
 по теме "3.4. Операционные системы, лекция 2".
 
 ## Q/A
