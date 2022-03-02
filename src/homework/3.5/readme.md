@@ -257,8 +257,135 @@ sudo vgdisplay
   VG UUID               7xcN3Z-o9Ca-iXl2-5eao-iA4e-cEVJ-YgSajr
 ```
 
-10. Создайте LV размером 100 Мб, указав его расположение на PV с RAID0.
+10. Создайте LV размером 100 Мб, указав его расположение на PV с `RAID0`.
 
 ```shell
-//todo
+sudo lvcreate --size=100MB test_vg /dev/md1
+  Logical volume "lvol0" created.
+  
+sudo lvdisplay
+--- Logical volume ---
+  LV Path                /dev/test_vg/lvol0
+  LV Name                lvol0
+  VG Name                test_vg
+  LV UUID                1fJJLO-zJeY-924D-O9gn-N1Cz-fyQ6-mnA7Z3
+  LV Write Access        read/write
+  LV Creation host, time vagrant, 2022-03-02 02:55:17 +0000
+  LV Status              available
+  # open                 0
+  LV Size                100.00 MiB
+  Current LE             25
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     4096
+  Block device           253:1
+```
+
+11. Создайте `mkfs.ext4` ФС на получившемся `LV`
+
+```shell
+sudo mkfs.ext4 /dev/test_vg/lvol0
+mke2fs 1.45.5 (07-Jan-2020)
+Creating filesystem with 25600 4k blocks and 25600 inodes
+
+Allocating group tables: done                            
+Writing inode tables: done                            
+Creating journal (1024 blocks): done
+Writing superblocks and filesystem accounting information: done
+```
+
+12. Смонтируйте этот раздел в любую директорию.
+
+```shell
+mkdir /tmp/new
+sudo mount /dev/test_vg/lvol0 /tmp/new
+```
+
+13. Поместите туда тестовый файл.
+
+```shell
+sudo wget https://mirror.yandex.ru/ubuntu/ls-lR.gz -O /tmp/new/test.gz
+
+--2022-03-02 03:04:07--  https://mirror.yandex.ru/ubuntu/ls-lR.gz
+Resolving mirror.yandex.ru (mirror.yandex.ru)... 213.180.204.183, 2a02:6b8::183
+Connecting to mirror.yandex.ru (mirror.yandex.ru)|213.180.204.183|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 22388361 (21M) [application/octet-stream]
+Saving to: ‘/tmp/new/test.gz’ 
+
+2022-03-02 03:04:09 (9.33 MB/s) - ‘/tmp/new/test.gz’ saved [22388361/22388361]
+```
+
+14. Прикрепите вывод `lsblk`.
+
+```shell
+sudo lsblk
+NAME                      MAJ:MIN RM  SIZE RO TYPE  MOUNTPOINT
+loop0                       7:0    0 55.4M  1 loop  /snap/core18/2128
+loop2                       7:2    0 70.3M  1 loop  /snap/lxd/21029
+loop3                       7:3    0 55.5M  1 loop  /snap/core18/2284
+loop4                       7:4    0 43.6M  1 loop  /snap/snapd/14978
+loop5                       7:5    0 61.9M  1 loop  /snap/core20/1361
+loop6                       7:6    0 67.9M  1 loop  /snap/lxd/22526
+sda                         8:0    0   64G  0 disk  
+├─sda1                      8:1    0    1M  0 part  
+├─sda2                      8:2    0    1G  0 part  /boot
+└─sda3                      8:3    0   63G  0 part  
+  └─ubuntu--vg-ubuntu--lv 253:0    0 31.5G  0 lvm   /
+sdb                         8:16   0  2.5G  0 disk  
+├─sdb1                      8:17   0    2G  0 part  
+│ └─md0                     9:0    0    2G  0 raid1 
+└─sdb2                      8:18   0  511M  0 part  
+  └─md1                     9:1    0 1017M  0 raid0 
+    └─test_vg-lvol0       253:1    0  100M  0 lvm   /tmp/new
+sdc                         8:32   0  2.5G  0 disk  
+├─sdc1                      8:33   0    2G  0 part  
+│ └─md0                     9:0    0    2G  0 raid1 
+└─sdc2                      8:34   0  511M  0 part  
+  └─md1                     9:1    0 1017M  0 raid0 
+    └─test_vg-lvol0       253:1    0  100M  0 lvm   /tmp/new
+```
+
+15. Протестируйте целостность файла
+
+```shell
+sudo gzip -t /tmp/new/test.gz
+echo $?
+
+0
+```
+
+16. Используя `pvmove`, переместите содержимое PV с `RAID0` на `RAID1`.
+
+```shell
+sudo pvmove /dev/md1 /dev/md0
+  /dev/md1: Moved: 16.00%
+  /dev/md1: Moved: 100.00%
+```
+
+17. Сделайте `--fail` на устройство в вашем `RAID1` md.
+
+```shell
+sudo mdadm --fail /dev/md0 /dev/sdb1
+mdadm: set /dev/sdb1 faulty in /dev/md0
+```
+
+18. Подтвердите выводом `dmesg`, что `RAID1` работает в деградированном состоянии
+
+```shell
+sudo dmesg | tail -n 5
+[ 2711.025093] 02:44:35.853387 timesync vgsvcTimeSyncWorker: Radical guest time change: 81 954 170 807 000ns (GuestNow=1 646 189 075 853 355 000 ns GuestLast=1 646 107 121 682 548 000 ns fSetTimeLastLoop=true )
+[ 3814.237420] EXT4-fs (dm-1): mounted filesystem with ordered data mode. Opts: (null)
+[ 3814.237429] ext4 filesystem being mounted at /tmp/new supports timestamps until 2038 (0x7fffffff)
+[ 4328.371203] md/raid1:md0: Disk failure on sdb1, disabling device.
+               md/raid1:md0: Operation continuing on 1 devices.
+```
+
+19. Протестируйте целостность файла, несмотря на "сбойный" диск он должен продолжать быть доступен
+
+```shell
+sudo gzip -t /tmp/new/test.gz
+echo $?
+0
 ```
