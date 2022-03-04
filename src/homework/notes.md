@@ -112,3 +112,15 @@
 ### Filesystems
 
 `mkfs`, `mount`, `/etc/fstab`
+
+## Network
+
+* `ping <domain/ip>`
+* `whois <ip>`
+* `whois -h whois.radb.net <ip>`
+* `bgpq3 -J <AS>`
+* `traceroute -An <ip>`
+* `mtr -zn <ip>`
+* `dig +trace @8.8.8.8 <domain>`
+* `dig -x <ip>`
+* `telnet <domain/ip> <port>`
