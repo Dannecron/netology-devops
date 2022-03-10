@@ -124,3 +124,4 @@
 * `dig +trace @8.8.8.8 <domain>`
 * `dig -x <ip>`
 * `telnet <domain/ip> <port>`
+* `ipcalc <network ip>/<mask>`
