@@ -121,3 +121,68 @@ UNCONN                       0                            0                     
 Файл [network.xml](./network.xml) для открытия в [diagrams.net](https://diagrams.net).
 
 ![network.png](./network.png)
+
+6. Установите Nginx, настройте в режиме балансировщика TCP или UDP.
+
+Установка nginx:
+
+```shell
+sudo apt install nginx
+
+sudo service nginx status
+● nginx.service - A high performance web server and a reverse proxy server
+     Loaded: loaded (/lib/systemd/system/nginx.service; enabled; vendor preset: enabled)
+     Active: active (running) since Thu 2022-03-17 03:14:31 UTC; 24s ago
+       Docs: man:nginx(8)
+   Main PID: 1830 (nginx)
+      Tasks: 3 (limit: 1107)
+     Memory: 5.0M
+     CGroup: /system.slice/nginx.service
+             ├─1830 nginx: master process /usr/sbin/nginx -g daemon on; master_process on;
+             ├─1831 nginx: worker process
+             └─1832 nginx: worker process
+```
+
+Далее, определим, что есть два ip-адреса, на которые необходимо сделать проксирование и балансировку трафика:
+* `10.2.2.2`
+* `10.2.2.3`
+
+Оба ip-адреса слушают следующие порты: `:25` - upd-трафик, `:80` - tcp-трафик.
+
+Настроим nginx на прослушивание порта `:80` для обоих типов трафика с дальнейшей балансировкой и проксированием.
+
+Добавим новый блок конфигурации в файл `/etc/nginx/nginx.conf`:
+
+```
+stream {
+    upstream tcp_backend {
+        server 10.2.2.2:80;
+        server 10.2.2.3:80;
+    }
+
+    upstream upd_backend {
+        server 10.2.2.2:25;
+        server 10.2.2.3:25;
+    }
+
+    server {
+        listen 80;
+        proxy_pass tcp_backend;
+    }
+
+    server {
+        listen 80 udp;
+        proxy_pass upd_backend;
+    }
+}
+```
+
+Проверим, что конфигурация в порядке:
+
+```shell
+sudo nginx -t
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+```
+
+// todo reload nginx settings, test out request
