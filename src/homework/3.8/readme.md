@@ -116,4 +116,8 @@ UNCONN                       0                            0                     
 
 5. Используя diagrams.net, создайте L3 диаграмму вашей домашней сети или любой другой сети, с которой вы работали.
 
-// todo
+В качестве сети взята стандартная домашняя сеть с wi-fi-роутером.
+
+Файл [network.xml](./network.xml) для открытия в [diagrams.net](https://diagrams.net).
+
+![network.png](./network.png)
