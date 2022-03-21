@@ -177,6 +177,12 @@ stream {
 }
 ```
 
+Дополнительно, нужно убрать конфигурацию приветственной страницы, которая работает по умолчанию и слушает порт `80`:
+
+```shell
+sudo rm -f /etc/nginx/sites-enabled/default
+```
+
 Проверим, что конфигурация в порядке:
 
 ```shell
@@ -185,4 +191,41 @@ nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
 nginx: configuration file /etc/nginx/nginx.conf test is successful
 ```
 
-// todo reload nginx settings, test out request
+Затем нужно применить конфигурацию nginx
+
+```shell
+sudo nginx -s reload
+sudo systemctl status nginx
+● nginx.service - A high performance web server and a reverse proxy server
+     Loaded: loaded (/lib/systemd/system/nginx.service; enabled; vendor preset: enabled)
+     Active: active (running) since Mon 2022-03-21 03:37:24 UTC; 6s ago
+       Docs: man:nginx(8)
+    Process: 1364 ExecStartPre=/usr/sbin/nginx -t -q -g daemon on; master_process on; (code=exited, status=0/SUCCESS)
+    Process: 1367 ExecStart=/usr/sbin/nginx -g daemon on; master_process on; (code=exited, status=0/SUCCESS)
+   Main PID: 1376 (nginx)
+      Tasks: 3 (limit: 1107)
+     Memory: 3.3M
+     CGroup: /system.slice/nginx.service
+             ├─1376 nginx: master process /usr/sbin/nginx -g daemon on; master_process on;
+             ├─1377 nginx: worker process
+             └─1378 nginx: worker process
+```
+
+Проверим, что nginx принимает соединение на порт `80`
+
+```shell
+curl -v --max-time 5 http://localhost:80
+*   Trying 127.0.0.1:80...
+* TCP_NODELAY set
+* Connected to localhost (127.0.0.1) port 80 (#0)
+> GET / HTTP/1.1
+> Host: localhost
+> User-Agent: curl/7.68.0
+> Accept: */*
+> 
+* Operation timed out after 5001 milliseconds with 0 bytes received
+* Closing connection 0
+curl: (28) Operation timed out after 5001 milliseconds with 0 bytes received
+```
+
+В данном случае добавили `--max-time 5`, чтобы быстрее получить ошибку, так как nginx пытается проксировать запрос на несуществующий адрес.
