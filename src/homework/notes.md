@@ -125,3 +125,13 @@
 * `dig -x <ip>`
 * `telnet <domain/ip> <port>`
 * `ipcalc <network ip>/<mask>`
+
+### SSH
+
+* `ssh-copy-id user@server` - добавление ssh-ключа на сервер для пользователя
+* `ssh-keygen -F server` - проверка ssh-сертификатов сервера
+* `ssh-keygen -R server` - удаление записи сервера из `known_hosts`
+
+### Web-servers
+
+* ssl config generation: https://ssl-config.mozilla.org/
