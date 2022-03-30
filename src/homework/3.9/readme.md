@@ -172,12 +172,95 @@ cd testssl
 
 5. Установите на Ubuntu ssh сервер, сгенерируйте новый приватный ключ. Скопируйте свой публичный ключ на другой сервер. Подключитесь к серверу по SSH-ключу.
 
-// todo
+На виртуальной машине уже установлен ssh-сервер и настроен один ssh-ключ для подключения к машине с хоста.
+Таким образом сгенерируем новый ssh-ключ для пользователя `vagrant` и попробуем подключиться как пользователь `root` через ssh-сервер.
+
+Генерация приватного и открытого ssh-ключей:
+
+```shell
+ssh-keygen
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/vagrant/.ssh/id_rsa): 
+Enter passphrase (empty for no passphrase): 
+Enter same passphrase again: 
+Your identification has been saved in /home/vagrant/.ssh/id_rsa
+Your public key has been saved in /home/vagrant/.ssh/id_rsa.pub
+The key fingerprint is:
+SHA256:id08L1eU83CEIr5iolPo2NKg+J7palNIO0o7D7agGuU vagrant@vagrant
+The key's randomart image is:
++---[RSA 3072]----+
+|               ..|
+|          . . .o |
+|         . . .= .|
+| .     o +.  . = |
+|. +  .. S +.  . .|
+| B... o o .o .   |
+|*+E* o o .. o    |
+|B*=o*      o     |
+|**Xo .           |
++----[SHA256]-----+
+```
+
+Добавим открытый ключ в файл `authorized_keys` для пользователя `root`:
+
+```shell
+cat .ssh/id_rsa.pub | sudo tee /root/.ssh/authorized_keys
+```
+
+Проверим, что всё работает:
+```shell
+ssh -l root 127.0.0.1
+Welcome to Ubuntu 20.04.4 LTS (GNU/Linux 5.4.0-104-generic x86_64)
+<...>
+root@vagrant:~#
+```
 
 6. Переименуйте файлы ключей из задания 5. Настройте файл конфигурации SSH клиента, так чтобы вход на удаленный сервер осуществлялся по имени сервера.
 
-// todo
+```shell
+mv ~/.ssh/id_rsa ~/.ssh/localhost_key
+mv ~/.ssh/id_rsa.pub ~/.ssh/localhost_key.pub
+```
+
+Добавим новую конфигурацию в файл `~/.ssh/config`:
+
+```
+host local-root
+  hostname 127.0.0.1
+  user root
+  identityfile ~/.ssh/localhost_key
+```
+
+Проверим, что всё работает:
+```shell
+ssh local-root
+Welcome to Ubuntu 20.04.4 LTS (GNU/Linux 5.4.0-104-generic x86_64)
+<...>
+root@vagrant:~#
+```
 
 7. Соберите дамп трафика утилитой tcpdump в формате pcap, 100 пакетов. Откройте файл pcap в Wireshark.
 
-// todo
+```shell
+sudo tcpdump -c 100 -w dump.pcap
+
+tcpdump -r dump.pcap 
+reading from file dump.pcap, link-type EN10MB (Ethernet)
+<...>
+```
+
+Для просмотра полученного файла в `Wireshark`, установим утилиту на хосте:
+
+```shell
+sudo apt install wireshark
+```
+
+Теперь, скопируем файл из виртуальной машины на хост, чтобы была возможность открыть его без проблем:
+
+```shell
+scp -P 2222 vagrant@127.0.0.1:/home/vagrant/dump.pcap ./dump.pcap
+```
+
+Затем запустим графическое отображение утилиты и откроем в ней файл:
+
+![wireshark](./wireshark.png)
