@@ -153,7 +153,7 @@ FOO34
 
 ```shell
 arrayInt=(1 2 3 4 5)
-# первый элемен
+# первый элемент
 echo $arrayInt
 1
 # все элементы
@@ -162,7 +162,7 @@ echo ${arrayInt[@]}
 # конкретный элемент
 echo ${arrayInt[3]}
 4
-# идексы
+# индексы
 echo ${!arrayInt[@]}
 # размерность
 echo ${#arrayInt[@]}
