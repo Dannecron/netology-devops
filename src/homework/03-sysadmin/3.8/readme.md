@@ -118,9 +118,9 @@ UNCONN                       0                            0                     
 
 В качестве сети взята стандартная домашняя сеть с wi-fi-роутером.
 
-Файл [network.xml](./network.xml) для открытия в [diagrams.net](https://diagrams.net).
+Файл [network.xml](network.xml) для открытия в [diagrams.net](https://diagrams.net).
 
-![network.png](./network.png)
+![network.png](network.png)
 
 6. Установите Nginx, настройте в режиме балансировщика TCP или UDP.
 

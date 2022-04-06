@@ -40,7 +40,7 @@ Set-Cookie: prov=a65f8cdf-ae94-33aa-2d32-b4ba53feba61; domain=.stackoverflow.com
 Наиболее долгих по загрузке запрос - это запрос на загрузку самой страницы после редиректа (`https://stackoverflow.com/`).
 Скриншот консоли браузера: 
 
-![stackoverflow.png](./stackoverflow.png)
+![stackoverflow.png](stackoverflow.png)
 
 3. Какой IP адрес у вас в интернете?
 
