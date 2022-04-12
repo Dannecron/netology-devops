@@ -41,3 +41,38 @@ echo $IFS
 export IFS=;
 unset IFS
 ```
+
+## YAML
+
+* Типы данных
+
+```yaml
+root:
+  emptyValue: 
+  booleanTrue: true
+  booleanFalse: false
+  canonTime: 2020-12-15T00:30:44.1Z
+  date: 2020-12-15
+  list:
+    - one
+    - two
+    - three
+    - name: one
+      type: two
+      default: true
+      using: [ localhost, 7.7.7.7 ]
+```
+
+* Многострочные значения в ключе
+
+```yaml
+---
+root:
+  first:|
+    Этот вид
+    сохранит все переходы на новую строку
+  second:>
+    А этот
+    преобразует каждый переход на новую строку
+    в пробел
+```

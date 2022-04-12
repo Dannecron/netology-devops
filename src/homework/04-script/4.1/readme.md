@@ -5,7 +5,7 @@
 
 ## Обязательная задача 1
 
-Есть [скрипт](./q1_script.sh):
+Есть [скрипт](q1_script.sh):
 ```shell
 a=1
 b=2
@@ -38,7 +38,7 @@ done
 
 ### Ваш скрипт:
 
-[script](./q2_script.sh)
+[script](q2_script.sh)
 
 ```shell
 #!/usr/bin/env bash
@@ -61,7 +61,7 @@ done
 
 ### Ваш скрипт:
 
-[script](./q3_script.sh)
+[script](q3_script.sh)
 ```shell
 #!/usr/bin/env bash
 
@@ -84,7 +84,7 @@ done
 
 ### Ваш скрипт:
 
-[script](./q4_script.sh)
+[script](q4_script.sh)
 
 ```shell
 #!/usr/bin/env bash
@@ -124,7 +124,7 @@ done
 
 ### Ваш скрипт:
 
-[script](./q5_script.sh)
+[script](q5_script.sh)
 
 ```shell
 #!/usr/bin/env bash
