@@ -54,46 +54,97 @@
 
 #### Ваш скрипт:
 
+[script](./q2.py)
+
 ```python
-???
+#!/usr/bin/env python3
+
+import json
+import io
+import os
+import socket
+import yaml
+
+hosts_list = {
+    "drive.google.com",
+    "mail.google.com",
+    "google.com"
+}
+
+filename_json = 'hosts.json'
+filename_yaml = 'hosts.yaml'
+
+if not os.path.exists(filename_json):
+    os.mknod(filename_json)
+
+if not os.path.exists(filename_yaml):
+    os.mknod(filename_yaml)
+
+file_json = None
+file_yaml = None
+
+try:
+    file_json = open(filename_json, 'r+')
+    file_yaml = open(filename_yaml, 'r+')
+
+    json_str = file_json.read()
+    try:
+        json_obj = json.load(io.StringIO(json_str))
+    except BaseException as err:
+        json_obj = dict({})
+        print('error: {}'.format(err))
+
+    for hostname in hosts_list:
+        ip_addr = socket.gethostbyname(hostname)
+        prev_ip_addr = json_obj.get(hostname)
+
+        if prev_ip_addr is None or prev_ip_addr == '':
+            prev_ip_addr = ip_addr
+
+        print('{} - {}'.format(hostname, ip_addr))
+        if ip_addr != prev_ip_addr:
+            print('[ERROR] {} IP mismatch: {} {}'.format(hostname, ip_addr, prev_ip_addr))
+
+        json_obj[hostname] = ip_addr
+
+    file_json.truncate(0)
+    file_json.seek(0)
+    file_json.write(json.dumps(json_obj))
+
+    file_yaml.truncate(0)
+    file_yaml.seek(0)
+    file_yaml.write(yaml.dump(json_obj))
+except BaseException as err:
+    print('error {}'.format(err))
+finally:
+    if file_json is not None:
+        file_json.close()
+
+    if file_yaml is not None:
+        file_yaml.close()
+
 ```
 
 #### Вывод скрипта при запуске при тестировании:
 
-```
-???
+```shell
+./q2.py
+error: Expecting value: line 1 column 1 (char 0)
+mail.google.com - 64.233.162.17
+google.com - 74.125.205.102
+drive.google.com - 142.250.150.194
 ```
 
 #### json-файл(ы), который(е) записал ваш скрипт:
 
 ```json
-???
+{"mail.google.com": "64.233.162.17", "google.com": "74.125.205.102", "drive.google.com": "142.250.150.194"}
 ```
 
 #### yml-файл(ы), который(е) записал ваш скрипт:
 
 ```yaml
-???
-```
-
-### Дополнительное задание (со звездочкой*) - необязательно к выполнению
-
-Так как команды в нашей компании никак не могут прийти к единому мнению о том, какой формат разметки данных использовать: JSON или YAML, нам нужно реализовать парсер из одного формата в другой. Он должен уметь:
-   * Принимать на вход имя файла
-   * Проверять формат исходного файла. Если файл не json или yml - скрипт должен остановить свою работу
-   * Распознавать какой формат данных в файле. Считается, что файлы *.json и *.yml могут быть перепутаны
-   * Перекодировать данные из исходного формата во второй доступный (из JSON в YAML, из YAML в JSON)
-   * При обнаружении ошибки в исходном файле - указать в стандартном выводе строку с ошибкой синтаксиса и её номер
-   * Полученный файл должен иметь имя исходного файла, разница в наименовании обеспечивается разницей расширения файлов
-
-#### Ваш скрипт:
-
-```python
-???
-```
-
-#### Пример работы скрипта:
-
-```
-???
+drive.google.com: 142.250.150.194
+google.com: 74.125.205.102
+mail.google.com: 64.233.162.17
 ```
