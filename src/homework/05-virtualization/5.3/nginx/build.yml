@@ -1,0 +1,39 @@
+---
+- hosts: 127.0.0.1
+  gather_facts: no
+  connection: local
+  tasks:
+    - name: create build directory
+      file:
+        path: /tmp/ansible-docker-build
+        state: directory
+        owner: 1000
+        group: 1000
+        mode: '0755'
+    - name: copy Dockerfile
+      copy:
+        src: ./Dockerfile
+        dest: /tmp/ansible-docker-build/Dockerfile
+        owner: 1000
+        group: 1000
+        mode: '0644'
+    - name: copy site.conf
+      copy:
+        src: ./site.conf
+        dest: /tmp/ansible-docker-build/site.conf
+        owner: 1000
+        group: 1000
+        mode: '0644'
+    - name: copy index.html
+      copy:
+        src: ./index.html
+        dest: /tmp/ansible-docker-build/index.html
+        owner: 1000
+        group: 1000
+        mode: '0644'
+    - name: build container image
+      docker_image:
+        name: dannecron/netology-devops-nginx:ansible
+        source: build
+        build:
+          path: /tmp/ansible-docker-build/

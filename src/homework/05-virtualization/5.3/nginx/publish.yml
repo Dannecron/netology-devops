@@ -1,0 +1,12 @@
+---
+- hosts: 127.0.0.1
+  gather_facts: no
+  connection: local
+  tasks:
+    - name: login to hub.docker.com
+      command: docker login
+    - name: push image to hub.docker.com
+      docker_image:
+        name: dannecron/netology-devops-nginx:ansible
+        source: local
+        push: yes

@@ -102,20 +102,28 @@ docker push dannecron/netology-devops-nginx:latest
 
 * Elasticsearch кластер для реализации логирования продуктивного веб-приложения - три ноды elasticsearch, два logstash и две ноды kibana
 
-todo ???
+Ввиду того, что `elasticsearch` - это своеобразная база данных, нуждающаяся в достаточно тонкой настройке,
+особенно для большого количества логов, то оптимально будет использовать виртуальные либо физические машины,
+в зависимости от требований к нагрузке.  
 
 * Мониторинг-стек на базе Prometheus и Grafana
 
-Так как Prometheus - это база данных, то оптимально будет выбрать решение на базе физической машины,
-чтобы увеличить отказоустойчивость. 
+Так как `Prometheus` - это база данных, то оптимально будет выбрать решение на базе физической машины,
+чтобы увеличить отказоустойчивость и уменьшить расходы с взаимодействием с физическими дисками.
+
+При этом само веб-приложение `Grafana` можно развернуть с использованием докера, так как это стандартный сервер для обработки запросов.
 
 * MongoDB, как основное хранилище данных для java-приложения
 
-todo ???
+Так как `MongoDB` - это база данных, то оптимально будет выбрать решение на базе физической машины,
+чтобы увеличить отказоустойчивость и уменьшить расходы с взаимодействием с физическими дисками.
 
 * Gitlab сервер для реализации CI/CD процессов и приватный (закрытый) Docker Registry
 
-todo ???
+В данном случае оптимально будет запустить сервер на физической или виртуальной машине. Это обусловлено тем,
+что `Docker Registry` активно взаимодействует с файловой системой, поэтому необходимо минимизировать издержки на данное взаимодействие.
+При этом сам `Gitlab` - это стек из множества сервисов, в том числе и база данных `postgresql`,
+поэтому для более удобной конфигурации и администрирования в данном случае лучше не использовать `docker`.
 
 ### Задача 3
 
@@ -125,4 +133,83 @@ todo ???
 > - Добавьте еще один файл в папку ```/data``` на хостовой машине;
 > - Подключитесь во второй контейнер и отобразите листинг и содержание файлов в ```/data``` контейнера.
 
-todo ???
+Запуск контейнера с `centos` в фоновом режиме:
+
+```shell
+docker run --rm -it -d --name centos-linux -v `pwd`/linux-data:/data centos:7.9.2009 tail -f /dev/null
+docker ps | grep centos                                                                              
+763f82085972    centos:7.9.2009    "tail -f /dev/null"    4 seconds ago    Up 3 seconds    centos-linux
+```
+
+Запуск контейнера с `debian` в фоновом режиме:
+
+```shell
+docker run --rm -it -d --name debian-linux -v `pwd`/linux-data:/data debian:11.3-slim tail -f /dev/null
+docker ps | grep debian                                                                                
+ed46ef5be3dc    debian:11.3-slim    "tail -f /dev/null"    15 seconds ago    Up 14 seconds    debian-linux
+```
+
+Подключаемся к контейнеру `centos-linux` и создадим там текстовый файл:
+
+```shell
+docker exec -it centos-linux bash
+cd /data/
+echo "some test text" >> test.txt
+ls -l
+total 8
+-rw-r--r-- 1 root root 15 May  5 03:06 test.txt
+```
+
+Создадим ещё один текстовый файл на хост-машине:
+
+```shell
+echo "host text test" >> linux-data/host.txt
+ls -l linux-data 
+total 8
+-rw-rw-r-- 1 dannc dannc 15 мая  5 10:08 host.txt
+-rw-r--r-- 1 root  root  15 мая  5 10:06 test.txt
+```
+
+Проверим, что оба файла находятся в контейнере `debian-linux`:
+
+```shell
+docker exec debian-linux bash -c "ls -l /data"
+total 8
+-rw-rw-r-- 1 1000 1000 15 May  5 03:08 host.txt
+-rw-r--r-- 1 root root 15 May  5 03:06 test.txt
+```
+
+### Задача 4 (*)
+
+> Соберите Docker образ с Ansible, загрузите на Docker Hub и пришлите ссылку вместе с остальными ответами к задачам.
+
+За основу возьмём [`Dockerfile`](./nginx/Dockerfile) для `nginx` из [задачи 1](#Задача 1).
+
+Создадим новый `playbook` в файле [build.yml](./nginx/build.yml). Добавим туда несколько действий:
+
+1. создание временной директории.
+2. копирование `Dockerfile`, конфигурации и `index.html` в данную директорию.
+3. сборка образа.
+
+Проверим, что всё работает и образ собирается:
+
+```shell
+ansible-playbook build.yml
+<...>
+docker image list | grep ansible
+dannecron/netology-devops-nginx    ansible    58df80189129    17 seconds ago    23.4MB
+```
+
+Для публикации в публичный регстри выделим отдельный `playbook`: [publish.yml](./nginx/publish.yml), в котром будет два шага:
+
+1. авторизация в `hub.docker.com`.
+2. публикация образа.
+
+Проверим, что всё работает:
+
+```shell
+ansible-playbook publish.yml
+<...>
+```
+
+Образ доступен по ссылке [gub.docker.com](https://hub.docker.com/layers/208296992/dannecron/netology-devops-nginx/ansible/images/sha256-e007739a276cbc1f556b674b1ec142360afe4fa35364f3a8b464e74786da4e3d?context=repo)
