@@ -21,3 +21,4 @@
 * [4.3. Языки разметки JSON и YAML](/src/homework/04-script/4.3)
 * [5.1. Основы виртуализации](/src/homework/05-virtualization/5.1)
 * [5.2. Применение принципов IaaC в работе с виртуальными машинами](/src/homework/05-virtualization/5.2)
+* [5.3. Введение. Экосистема. Архитектура. Жизненный цикл Docker контейнера](/src/homework/05-virtualization/5.3)
