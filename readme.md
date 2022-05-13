@@ -23,3 +23,4 @@
 * [5.2. Применение принципов IaaC в работе с виртуальными машинами](/src/homework/05-virtualization/5.2)
 * [5.3. Введение. Экосистема. Архитектура. Жизненный цикл Docker контейнера](/src/homework/05-virtualization/5.3)
 * [5.4. Оркестрация группой Docker контейнеров на примере Docker Compose](/src/homework/05-virtualization/5.4)
+* [5.5. Оркестрация кластером Docker контейнеров на примере Docker Swarm](/src/homework/05-virtualization/5.5)
