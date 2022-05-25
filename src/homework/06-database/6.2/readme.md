@@ -57,7 +57,7 @@ CREATE USER "test-admin-user" WITH PASSWORD '123';
 CREATE USER "test-simple-user" WITH PASSWORD '123';
 ```
 
-После этого, создадим таблицы. Скрипты для создания таблиц в БД: [tables.sql](./tables.sql).
+После этого, создадим таблицы. Скрипты для создания таблиц в БД: [migration_structure.sql](./migration_structure.sql).
 
 Следующим шагом, дадим права новым пользователям:
 
@@ -143,32 +143,44 @@ WHERE table_catalog like 'test_db';
 > Используя SQL синтаксис - наполните таблицы следующими тестовыми данными:
 > 
 > Таблица orders
-> 
-> |Наименование|цена|
-> |------------|----|
-> |Шоколад| 10 |
-> |Принтер| 3000 |
-> |Книга| 500 |
-> |Монитор| 7000|
-> |Гитара| 4000|
-> 
+
+| Наименование | цена |
+|--------------|------|
+| Шоколад      | 10   |
+| Принтер      | 3000 |
+| Книга        | 500  |
+| Монитор      | 7000 |
+| Гитара       | 4000 |
+ 
 > Таблица clients
-> 
-> |ФИО|Страна проживания|
-> |------------|----|
-> |Иванов Иван Иванович| USA |
-> |Петров Петр Петрович| Canada |
-> |Иоганн Себастьян Бах| Japan |
-> |Ронни Джеймс Дио| Russia|
-> |Ritchie Blackmore| Russia|
-> 
+
+| ФИО                  | Страна проживания |
+|----------------------|-------------------|
+| Иванов Иван Иванович | USA               |
+| Петров Петр Петрович | Canada            |
+| Иоганн Себастьян Бах | Japan             |
+| Ронни Джеймс Дио     | Russia            |
+| Ritchie Blackmore    | Russia            |
+
 > Используя SQL синтаксис:
 > - вычислите количество записей для каждой таблицы 
 > - приведите в ответе:
 >     - запросы 
 >     - результаты их выполнения.
 
-// todo 
+Скрипты заполнения таблиц данными: [migration_data.sql](./migration_data.sql).
+
+Запросы на получение количество записей в таблицах:
+
+```sql
+-- для таблицы orders
+select count(id) from orders;
+-- Результат: 5
+
+-- для таблицы clients
+select count(id) from clients;
+-- Результат: 5
+```
 
 ### Задача 4
 
@@ -176,11 +188,11 @@ WHERE table_catalog like 'test_db';
 > 
 > Используя foreign keys свяжите записи из таблиц, согласно таблице:
 > 
-> |ФИО|Заказ|
-> |------------|----|
-> |Иванов Иван Иванович| Книга |
-> |Петров Петр Петрович| Монитор |
-> |Иоганн Себастьян Бах| Гитара |
+| ФИО                  | Заказ   |
+|----------------------|---------|
+| Иванов Иван Иванович | Книга   |
+| Петров Петр Петрович | Монитор |
+| Иоганн Себастьян Бах | Гитара  |
 > 
 > Приведите SQL-запросы для выполнения данных операций.
 > 
@@ -188,7 +200,48 @@ WHERE table_catalog like 'test_db';
 >  
 > Подсказка - используйте директиву `UPDATE`.
 
-// todo
+Запросы на проставление связи между клиентами и заказами:
+
+```sql
+update clients 
+set order_id = (
+    select id
+    from orders
+    where orders.name like 'Книга'
+) 
+where clients.last_name like 'Иванов Иван Иванович';
+
+update clients 
+set order_id = (
+    select id
+    from orders
+    where orders.name like 'Монитор'
+) 
+where clients.last_name like 'Иванов Иван Иванович';
+
+update clients 
+set order_id = (
+    select id
+    from orders
+    where orders.name like 'Гитара'
+) 
+where clients.last_name like 'Иоганн Себастьян Бах';
+```
+
+Запрос на вывод всех пользователей, которые совершили заказ:
+
+```sql
+select * from clients where order_id is not null;
+```
+
+Результат данного запроса:
+
+| id  | last_name            | country | order_id |
+|-----|----------------------|---------|----------|
+| 1   | Иванов Иван Иванович | USA     | 3        |
+| 2   | Петров Петр Петрович | Canada  | 4        |
+| 3   | Иоганн Себастьян Бах | Japan   | 5        |
+
 
 ### Задача 5
 
@@ -197,7 +250,31 @@ WHERE table_catalog like 'test_db';
 > 
 > Приведите получившийся результат и объясните что значат полученные значения.
 
-// todo
+Запрос на получение анализа запроса из [задачи 4](#Задача 4):
+
+```sql
+explain select * from clients where order_id is not null;
+```
+
+Результат выполнения:
+
+```text
+"QUERY PLAN"
+"Seq Scan on clients  (cost=0.00..10.70 rows=70 width=1040)"
+"  Filter: (order_id IS NOT NULL)"
+```
+
+Данный результат можно проанализировать следующим образом:
+* `Seq Scan on clients` - последовательное сканирование всех записей в таблице (простой перебор записей).
+* `cost=0.00` - приблизительная стоимость запуска запроса. Это время, которое проходит, прежде чем начнётся этап вывода данных.
+* `..10.70` - приблизительная общая стоимость запроса. Определяется наихудший вариант выполнения,
+  когда необходимо проанализировать и вывести все строки в таблице.
+* `rows=70` - ожидаемое число строк, которое вернёт запрос в наихудшем варианте выполнения.
+* `width=1040` - ожидаемый средний размер строк, которые отдаст запрос (в байтах).
+* `Filter: (order_id IS NOT NULL)` - применение фильтра на проверку на null. В данном случае 
+  фильтр будет применён к каждой записи из таблицы.
+
+Подробнее про [использование EXPLAIN](https://postgrespro.ru/docs/postgrespro/12/using-explain)
 
 ### Задача 6
 
@@ -211,4 +288,47 @@ WHERE table_catalog like 'test_db';
 > 
 > Приведите список операций, который вы применяли для бэкапа данных и восстановления.
 
-// todo
+Создание бэкапа базы данных:
+
+```shell
+docker-compose exec postgres sh
+pg_dump -Uadmin -dtest_db > test_db.sql
+```
+
+Остановка текущего контейнера с БД и запуск нового:
+
+```shell
+docker-compose stop postgres
+docker run --rm -d --name=netology_dump_postgres \
+  -e POSTGRES_USER=admin \
+  -e POSTGRES_PASSWORD=123 \
+  -v 62_netology_pgdump:/opt/pgdump -w /opt/pgdump \
+  postgres:12.11-alpine
+```
+
+Применение дампа в новом инстансе БД:
+
+```shell
+docker exec -it netology_dump_postgres sh
+psql -Uadmin -c"CREATE DATABASE test_db;"
+psql -Uadmin -dtest_db < test_db.sql
+psql -Uadmin -dtest_db
+
+test_db=# \l
+   Name    | Owner | Encoding |  Collate   |   Ctype    | Access privileges 
+-----------+-------+----------+------------+------------+-------------------
+ admin     | admin | UTF8     | en_US.utf8 | en_US.utf8 | 
+ postgres  | admin | UTF8     | en_US.utf8 | en_US.utf8 | 
+ template0 | admin | UTF8     | en_US.utf8 | en_US.utf8 | =c/admin         +
+           |       |          |            |            | admin=CTc/admin
+ template1 | admin | UTF8     | en_US.utf8 | en_US.utf8 | =c/admin         +
+           |       |          |            |            | admin=CTc/admin
+ test_db   | admin | UTF8     | en_US.utf8 | en_US.utf8 | 
+
+test_db=# \dt
+        List of relations
+ Schema |  Name   | Type  | Owner 
+--------+---------+-------+-------
+ public | clients | table | admin
+ public | orders  | table | admin
+```
