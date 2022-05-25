@@ -183,7 +183,7 @@ total 8
 
 > Соберите Docker образ с Ansible, загрузите на Docker Hub и пришлите ссылку вместе с остальными ответами к задачам.
 
-За основу возьмём [`Dockerfile`](./nginx/Dockerfile) для `nginx` из [задачи 1](#Задача 1).
+За основу возьмём [`Dockerfile`](./nginx/Dockerfile) для `nginx` из [задачи 1](#задача-1).
 
 Создадим новый `playbook` в файле [build.yml](./nginx/build.yml). Добавим туда несколько действий:
 
