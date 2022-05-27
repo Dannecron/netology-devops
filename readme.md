@@ -26,3 +26,4 @@
 * [5.5. Оркестрация кластером Docker контейнеров на примере Docker Swarm](/src/homework/05-virtualization/5.5)
 * [6.1. Типы и структура СУБД](/src/homework/06-database/6.1)
 * [6.2. SQL](/src/homework/06-database/6.2)
+* [6.3. MySQL](/src/homework/06-database/6.3)
