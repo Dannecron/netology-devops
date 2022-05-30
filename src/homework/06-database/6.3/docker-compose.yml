@@ -11,6 +11,7 @@ services:
     volumes:
       - netology_mysql_data:/var/lib/mysql
       - ./dump:/opt/dump
+      - ./inno_db.cnf:/etc/mysql/conf.d/inno_db.cnf
 
 volumes:
   netology_mysql_data:
