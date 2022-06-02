@@ -27,3 +27,4 @@
 * [6.1. Типы и структура СУБД](/src/homework/06-database/6.1)
 * [6.2. SQL](/src/homework/06-database/6.2)
 * [6.3. MySQL](/src/homework/06-database/6.3)
+* [6.4. PostgreSQL](/src/homework/06-database/6.4)

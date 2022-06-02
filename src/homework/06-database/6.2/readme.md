@@ -46,7 +46,7 @@ docker-compose exec postgres sh
 createdb --username=admin some_db
 ```
 
-Далее создадим пользователей. Для начала подключимся к БД с помощью утилиты psql:
+Далее создадим пользователей. Для начала подключимся к БД с помощью утилиты `psql`:
 ```shell
 docker-compose exec postgres psql --username=admin --dbname=test_db
 ```
