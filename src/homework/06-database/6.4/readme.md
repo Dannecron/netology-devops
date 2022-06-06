@@ -202,4 +202,16 @@ CREATE TABLE orders_2 PARTITION OF orders
 > 
 > Как бы вы доработали бэкап-файл, чтобы добавить уникальность значения столбца `title` для таблиц `test_database`?
 
-// todo
+Создание бэкапа базы данных:
+
+```shell
+docker-compose exec postgres sh
+pg_dump -Uadmin -dtest_database > /opt/dump/test_database.sql
+```
+
+Есть два варианта, как можно сделать `title` уникальным:
+
+1. Предпочтительный способ. Необходимо выполнить запрос `alter table orders add constraint orders_tilte_unique unique (title);` 
+  на текущей работающей БД, а затем снять дамп.
+2. Так как дамп БД - это набор sql-скриптов, то можно добавить запрос непосредственно в файл `test_database.sql`.
+  Но в данном случае изменения применяться только для БД, на которых будет применён этот дамп.
