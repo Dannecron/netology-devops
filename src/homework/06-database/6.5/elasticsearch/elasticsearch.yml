@@ -1,0 +1,15 @@
+---
+cluster:
+  name: "docker-cluster"
+network:
+  host: 0.0.0.0
+node:
+  name: ${NODE_NAME}
+discovery:
+  type: ${DISCOVERY_TYPE}
+path:
+  data: /var/lib/elasticsearch-data
+  logs: /var/log/elasticsearch
+xpack:
+  security:
+    enabled: false
