@@ -10,6 +10,7 @@ discovery:
 path:
   data: /var/lib/elasticsearch-data
   logs: /var/log/elasticsearch
+  repo: /usr/share/elasticsearch/snapshot
 xpack:
   security:
     enabled: false

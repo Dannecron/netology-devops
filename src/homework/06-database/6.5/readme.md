@@ -202,4 +202,202 @@ curl --request DELETE -sL \
 
 ### Задача 3
 
-// todo
+> В данном задании вы научитесь:
+> - создавать бэкапы данных
+> - восстанавливать индексы из бэкапов
+> 
+> Создайте директорию `{путь до корневой директории с elasticsearch в образе}/snapshots`.
+> 
+> Используя API [зарегистрируйте](https://www.elastic.co/guide/en/elasticsearch/reference/current/snapshots-register-repository.html#snapshots-register-repository) 
+> данную директорию как `snapshot repository` c именем `netology_backup`.
+> 
+> **Приведите в ответе** запрос API и результат вызова API для создания репозитория.
+> 
+> Создайте индекс `test` с 0 реплик и 1 шардом и **приведите в ответе** список индексов.
+> 
+> [Создайте `snapshot`](https://www.elastic.co/guide/en/elasticsearch/reference/current/snapshots-take-snapshot.html) 
+> состояния кластера `elasticsearch`.
+> 
+> **Приведите в ответе** список файлов в директории со `snapshot`ами.
+> 
+> Удалите индекс `test` и создайте индекс `test-2`. **Приведите в ответе** список индексов.
+> 
+> [Восстановите](https://www.elastic.co/guide/en/elasticsearch/reference/current/snapshots-restore-snapshot.html) состояние
+> кластера `elasticsearch` из `snapshot`, созданного ранее. 
+> 
+> **Приведите в ответе** запрос к API восстановления и итоговый список индексов.
+> 
+> Подсказки:
+> - возможно вам понадобится доработать `elasticsearch.yml` в части директивы `path.repo` и перезапустить `elasticsearch`
+
+Для начала необходимо обновить образ, добавив в [Dockerfile](./elasticsearch/Dockerfile) создание новой директории
+по пути `/usr/share/elasticsearch/snapshot`. Далее необходимо добавить новый ключ конфигурации `path.repo` в [elasticsearch.yml](elasticsearch/elasticsearch.yml).
+
+Регистрация новой директории как директории `snapshot`:
+
+```shell
+curl --request PUT -sL \
+     --url 'http://localhost:9200/_snapshot/netology_backup' \
+     -H "Content-Type: application/json" \
+     -d '
+{
+  "type": "fs",
+  "settings": {
+    "location": "/usr/share/elasticsearch/snapshot"
+  }
+}
+'
+
+{"acknowledged":true}
+
+curl --request GET -sL \
+     --url 'http://localhost:9200/_snapshot/netology_backup/' \
+     -H "Content-Type: application/json"
+
+{"netology_backup":{"type":"fs","settings":{"location":"/usr/share/elasticsearch/snapshot"}}}
+```
+
+Создание нового индекса:
+
+```shell
+curl --request PUT -sL \
+     --url 'http://localhost:9200/test' \
+     -H "Content-Type: application/json" \
+     -H "Accept: application/json" \
+     -d '
+{
+  "settings": {
+    "index": {
+      "number_of_shards": 1,  
+      "number_of_replicas": 0 
+    }
+  }
+}
+'
+
+{"acknowledged":true,"shards_acknowledged":true,"index":"test"}
+
+curl --request GET -sL \
+     --url 'http://localhost:9200/_cat/indices' \
+     -H "Content-Type: application/json"
+
+green open .geoip_databases GgHLCD9tQBeeOGnnkPrAqQ 1 0 40 0 38.2mb 38.2mb
+green open test             p0tErJUqSXWumKWf2o_Rwg 1 0  0 0   226b   226b
+```
+
+Создание `snapshot` состояния `elasticsearch`:
+
+```shell
+curl --request PUT -sL \
+     --url 'http://localhost:9200/_snapshot/netology_backup/%3Cmy_snapshot_%7Bnow%2Fd%7D%3E?wait_for_completion=true&pretty=true' \
+     -H "Content-Type: application/json" \
+     -d '
+{
+  "indices": ["test"],
+  "ignore_unavailable": true,
+  "include_global_state": false
+}
+'
+
+{
+  "snapshot" : {
+    "snapshot" : "my_snapshot_2022.06.08",
+    "uuid" : "hXFHeJrnShi4b1JSJUeJCg",
+    "repository" : "netology_backup",
+    "version_id" : 7160399,
+    "version" : "7.16.3",
+    "indices" : [
+      "test"
+    ],
+    "data_streams" : [ ],
+    "include_global_state" : false,
+    "state" : "SUCCESS",
+    "start_time" : "2022-06-08T10:50:53.699Z",
+    "start_time_in_millis" : 1654685453699,
+    "end_time" : "2022-06-08T10:50:53.699Z",
+    "end_time_in_millis" : 1654685453699,
+    "duration_in_millis" : 0,
+    "failures" : [ ],
+    "shards" : {
+      "total" : 1,
+      "failed" : 0,
+      "successful" : 1
+    },
+    "feature_states" : [ ]
+  }
+}
+
+```
+
+Удаление индекса `test` и создание нового индекса `test-2`:
+
+```shell
+curl --request DELETE -sL \
+     --url 'http://localhost:9200/test' \
+     -H "Content-Type: application/json"
+
+{"acknowledged":true}
+
+curl --request PUT -sL \
+     --url 'http://localhost:9200/test-2' \
+     -H "Content-Type: application/json" \
+     -H "Accept: application/json" \
+     -d '
+{
+  "settings": {
+    "index": {
+      "number_of_shards": 1,  
+      "number_of_replicas": 0 
+    }
+  }
+}
+'
+
+{"acknowledged":true,"shards_acknowledged":true,"index":"test-2"}
+
+curl --request GET -sL \
+     --url 'http://localhost:9200/_cat/indices' \
+     -H "Content-Type: application/json"
+
+green open test-2           YFdNJTp4SraTsWGFSh6YjQ 1 0  0 0   226b   226b
+green open .geoip_databases GgHLCD9tQBeeOGnnkPrAqQ 1 0 40 0 38.2mb 38.2mb
+```
+
+Получение доступных `snapshot` и восстановление из созданного на предыдущем шаге снимка:
+
+```shell
+curl --request GET -sL \
+     --url 'http://localhost:9200/_snapshot/netology_backup/*?verbose=false&pretty=true' \
+     -H "Content-Type: application/json"
+{
+  "snapshots" : [
+    {
+      "snapshot" : "my_snapshot_2022.06.08",
+      "uuid" : "hXFHeJrnShi4b1JSJUeJCg",
+      "repository" : "netology_backup",
+      "indices" : [
+        "test"
+      ],
+      "data_streams" : [ ],
+      "state" : "SUCCESS"
+    }
+  ],
+  "total" : 1,
+  "remaining" : 0
+}
+
+
+curl --request POST -sL \
+     --url 'http://localhost:9200/_snapshot/netology_backup/my_snapshot_2022.06.08/_restore' \
+     -H "Content-Type: application/json"
+     
+{"accepted" : true
+
+curl --request GET -sL \
+     --url 'http://localhost:9200/_cat/indices' \
+     -H "Content-Type: application/json"
+
+green open .geoip_databases fTbLF8FxREWjni5I7d6SxQ 1 0 40 0 38.2mb 38.2mb
+green open test-2           VnS7hBAiTr2-Q6gaaK4gNw 1 0  0 0   226b   226b
+green open test             1ZIrIxzTTxCdrUAagtrZMA 1 0  0 0   226b   226b
+```
