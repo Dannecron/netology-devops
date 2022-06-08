@@ -68,7 +68,137 @@ curl --request GET -sL \
 
 ### Задача 2
 
-// todo
+> В этом задании вы научитесь:
+> - создавать и удалять индексы
+> - изучать состояние кластера
+> - обосновывать причину деградации доступности данных
+> 
+> Ознакомтесь с [документацией](https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html) 
+> и добавьте в `elasticsearch` 3 индекса, в соответствии со таблицей:
+ 
+| Имя   | Количество реплик | Количество шард |
+|-------|-------------------|-----------------|
+| ind-1 | 0                 | 1               |
+| ind-2 | 1                 | 2               |
+| ind-3 | 2                 | 4               |
+ 
+> Получите список индексов и их статусов, используя API и **приведите в ответе** на задание.
+> 
+> Получите состояние кластера `elasticsearch`, используя API.
+> 
+> Как вы думаете, почему часть индексов и кластер находится в состоянии yellow?
+> 
+> Удалите все индексы.
+> 
+> **Важно**
+> 
+> При проектировании кластера elasticsearch нужно корректно рассчитывать количество реплик и шард,
+> иначе возможна потеря данных индексов, вплоть до полной, при деградации системы.
+
+Запросы на создание индексов:
+
+```shell
+curl --request PUT -sL \
+     --url 'http://localhost:9200/ind-1?pretty' \
+     -H "Content-Type: application/json" \
+     -H "Accept: application/json" \
+     -d '
+{
+  "settings": {
+    "index": {
+      "number_of_shards": 1,  
+      "number_of_replicas": 0 
+    }
+  }
+}
+'
+
+{
+  "acknowledged" : true,
+  "shards_acknowledged" : true,
+  "index" : "ind-1"
+}
+
+curl --request PUT -sL \
+     --url 'http://localhost:9200/ind-2?pretty' \
+     -H "Content-Type: application/json" \
+     -H "Accept: application/json" \
+     -d '
+{
+  "settings": {
+    "index": {
+      "number_of_shards": 2,  
+      "number_of_replicas": 1 
+    }
+  }
+}
+'
+
+{
+  "acknowledged" : true,
+  "shards_acknowledged" : true,
+  "index" : "ind-2"
+}
+
+curl --request PUT -sL \
+     --url 'http://localhost:9200/ind-3?pretty' \
+     -H "Content-Type: application/json" \
+     -H "Accept: application/json" \
+     -d '
+{
+  "settings": {
+    "index": {
+      "number_of_shards": 4,  
+      "number_of_replicas": 2
+    }
+  }
+}
+'
+
+{
+  "acknowledged" : true,
+  "shards_acknowledged" : true,
+  "index" : "ind-3"
+}
+```
+
+Получение списка индексов и их статусы:
+
+```shell
+curl --request GET -sL \
+     --url 'http://localhost:9200/_cat/indices' \
+     -H "Content-Type: application/json"
+
+green  open .geoip_databases 822HE2KlRMuttGzNxhQ6Sw 1 0 40 0 38.1mb 38.1mb
+green  open ind-1            Qc4IYuppSm6lolKX5Gu2fA 1 0  0 0   226b   226b
+yellow open ind-3            KfDmAYmxSvOmsuPlw8ahqA 4 2  0 0   904b   904b
+yellow open ind-2            6Fbu2wMZSu-60LZlSNOvAA 2 1  0 0   452b   452b
+```
+
+Здесь часть индексов имеет статус `yellow`, так как в кластере находится только один сервер `elasticsearch`,
+а значит индексы не могут реплецироваться согласно их конфигурации по количеству реплик.
+
+Удаление индексов:
+
+```shell
+curl --request DELETE -sL \
+     --url 'http://localhost:9200/ind-1' \
+     -H "Content-Type: application/json"
+     
+{"acknowledged":true}
+
+curl --request DELETE -sL \
+     --url 'http://localhost:9200/ind-2' \
+     -H "Content-Type: application/json"
+
+{"acknowledged":true}
+
+curl --request DELETE -sL \
+     --url 'http://localhost:9200/ind-3' \
+     -H "Content-Type: application/json"
+
+{"acknowledged":true}
+```
 
 ### Задача 3
 
