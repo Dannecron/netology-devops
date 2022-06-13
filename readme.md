@@ -29,3 +29,4 @@
 * [6.3. MySQL](/src/homework/06-database/6.3)
 * [6.4. PostgreSQL](/src/homework/06-database/6.4)
 * [6.5. Elasticsearch](/src/homework/06-database/6.5)
+* [6.6. Troubleshooting](/src/homework/06-database/6.6)
