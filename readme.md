@@ -30,3 +30,4 @@
 * [6.4. PostgreSQL](/src/homework/06-database/6.4)
 * [6.5. Elasticsearch](/src/homework/06-database/6.5)
 * [6.6. Troubleshooting](/src/homework/06-database/6.6)
+* [7.1. Инфраструктура как код](/src/homework/07-terraform/7.1)
