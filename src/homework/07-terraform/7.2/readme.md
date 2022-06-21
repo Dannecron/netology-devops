@@ -62,7 +62,7 @@ provider "yandex" {
 
 ```shell
 cd ./terraform \
-	&& env $(cat .env) terraform init
+    && env $(cat .env) terraform init
 ```
 
 Для создания `yandex_compute_image` в [main.tf](./terraform/main.tf) необходимо добавить:
@@ -125,7 +125,7 @@ output "external_ip_address_vm_1" {
 
 ```shell
 cd ./terraform \
-  && env  terraform plan
+    && env $(cat .env) terraform plan
 
 Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
   + create
