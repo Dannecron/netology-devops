@@ -65,8 +65,6 @@ cd ./terraform \
 	&& env $(cat .env) terraform init
 ```
 
-Для упрощения вызова команд был создан [Makefile](./Makefile).
-
 Для создания `yandex_compute_image` в [main.tf](./terraform/main.tf) необходимо добавить:
 
 ```shell
