@@ -9,16 +9,9 @@ resource "yandex_vpc_subnet" "subnet-1" {
   v4_cidr_blocks = ["192.168.10.0/24"]
 }
 
-output "internal_ip_address_vm_1" {
-  value = yandex_compute_instance.vm-1.network_interface.0.ip_address
-}
-
-output "external_ip_address_vm_1" {
-  value = yandex_compute_instance.vm-1.network_interface.0.nat_ip_address
-}
-
 resource "yandex_compute_instance" "vm-1" {
   name = "test-vm-1"
+  count = local.vm_count[terraform.workspace]
 
   resources {
     cores  = 2
@@ -39,4 +32,16 @@ resource "yandex_compute_instance" "vm-1" {
   metadata = {
     ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
   }
+}
+
+output "internal_ip_address_vm_1" {
+  value = [
+    for vm in yandex_compute_instance.vm-1 : vm.network_interface.0.ip_address
+  ]
+}
+
+output "external_ip_address_vm_1" {
+  value = [
+    for vm in yandex_compute_instance.vm-1 : vm.network_interface.0.nat_ip_address
+  ]
 }
