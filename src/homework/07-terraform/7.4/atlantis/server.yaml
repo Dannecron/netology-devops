@@ -1,0 +1,12 @@
+---
+repos:
+  - id: github.com/Dannecron/netology-devops
+    allowed_overrides: [apply_requirements]
+
+workflows:
+  default:
+    plan:
+      steps:
+        - init
+        - plan:
+            extra_args: [ "-lock", "false" ]

@@ -1,0 +1,10 @@
+version: 3
+projects:
+  - dir: src/homework/07-terraform/7.3/terraform
+    workspace: staging
+    autoplan:
+      when_modified: ["*.tf"]
+  - dir: src/homework/07-terraform/7.3/terraform
+      workspace: prod
+      autoplan:
+        when_modified: [ "*.tf" ]
