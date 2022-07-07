@@ -35,3 +35,4 @@
 * [7.3. Основы и принцип работы Terraform](/src/homework/07-terraform/7.3)
 * [7.4. Средства командной работы над инфраструктурой](/src/homework/07-terraform/7.4)
 * [7.5. Основы golang](/src/homework/07-terraform/7.5)
+* [7.6. Написание собственных провайдеров для Terraform](/src/homework/07-terraform/7.6)
