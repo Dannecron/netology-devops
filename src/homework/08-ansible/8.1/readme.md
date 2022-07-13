@@ -161,23 +161,117 @@ debian                     : ok=3    changed=0    unreachable=0    failed=0    s
 
 > 7. При помощи `ansible-vault` зашифруйте факты в `group_vars/deb` и `group_vars/el` с паролем `netology`.
 
-//todo
+```shell
+ansible-vault encrypt group_vars/deb/example.yml
+```
+
+```shell
+ansible-vault encrypt group_vars/el/example.yml
+```
 
 > 8. Запустите playbook на окружении `prod.yml`. При запуске `ansible` должен запросить у вас пароль. Убедитесь в работоспособности.
 
-//todo
+```shell
+ansible-playbook --ask-vault-pass -i inventory/prod.yml site.yml
+```
+
+```text
+PLAY [Print os facts] ******************************************************************************************************************************************************************
+
+TASK [Gathering Facts] *****************************************************************************************************************************************************************
+[WARNING]: Distribution debian 11 on host debian should use /usr/bin/python3, but is using /usr/local/bin/python3.10, since the discovered platform python interpreter was not present.
+See https://docs.ansible.com/ansible-core/2.13/reference_appendices/interpreter_discovery.html for more information.
+ok: [debian]
+ok: [centos7]
+
+TASK [Print OS] ************************************************************************************************************************************************************************
+ok: [centos7] => {
+    "msg": "CentOS"
+}
+ok: [debian] => {
+    "msg": "Debian"
+}
+
+TASK [Print fact] **********************************************************************************************************************************************************************
+ok: [centos7] => {
+    "msg": "el default fact"
+}
+ok: [debian] => {
+    "msg": "deb default fact"
+}
+
+PLAY RECAP *****************************************************************************************************************************************************************************
+centos7                    : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+debian                     : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+```
 
 > 9. Посмотрите при помощи `ansible-doc` список плагинов для подключения. Выберите подходящий для работы на `control node`.
 
-//todo
+Для выполнения команд на `control node` (машине, с которой производится запуск `playbook`), можно использовать модуль [`local_action`](https://docs.ansible.com/ansible/latest/user_guide/playbooks_delegation.html).
+К сожалению, в `ansible-doc` не смог найти встроенных модулей, а документации к `local_action` в данной утилите нет.
+
+```shell
+ansible-doc local_action
+```
+
+```text
+[WARNING]: module local_action not found in: ~/.ansible/plugins/modules:/usr/share/ansible/plugins/modules:~/.local/lib/python3.8/site-packages/ansible/modules
+```
 
 > 10. В `prod.yml` добавьте новую группу хостов с именем  `local`, в ней разместите localhost с необходимым типом подключения.
 
-//todo
+Новая группа хостов будет выглядеть следующим образом:
+
+```yaml
+local:
+  hosts:
+    localhost:
+      ansible_connection: local
+```
 
 > 11. Запустите playbook на окружении `prod.yml`. При запуске `ansible` должен запросить у вас пароль. Убедитесь что факты `some_fact` для каждого из хостов определены из верных `group_vars`.
 
-//todo
+```shell
+ansible-playbook --ask-vault-pass -i inventory/prod.yml site.yml
+```
+
+```text
+PLAY [Print os facts] ******************************************************************************************************************************************************************
+
+TASK [Gathering Facts] *****************************************************************************************************************************************************************
+ok: [localhost]
+[WARNING]: Distribution debian 11 on host debian should use /usr/bin/python3, but is using /usr/local/bin/python3.10, since the discovered platform python interpreter was not present.
+See https://docs.ansible.com/ansible-core/2.13/reference_appendices/interpreter_discovery.html for more information.
+ok: [debian]
+ok: [centos7]
+
+TASK [Print OS] ************************************************************************************************************************************************************************
+ok: [centos7] => {
+    "msg": "CentOS"
+}
+ok: [debian] => {
+    "msg": "Debian"
+}
+ok: [localhost] => {
+    "msg": "Ubuntu"
+}
+
+TASK [Print fact] **********************************************************************************************************************************************************************
+ok: [centos7] => {
+    "msg": "el default fact"
+}
+ok: [debian] => {
+    "msg": "deb default fact"
+}
+ok: [localhost] => {
+    "msg": "all default fact"
+}
+
+PLAY RECAP *****************************************************************************************************************************************************************************
+centos7                    : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+debian                     : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+localhost                  : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+```
 
 > 12. Заполните `README.md` ответами на вопросы. Сделайте `git push` в ветку `master`. В ответе отправьте ссылку на ваш открытый репозиторий с изменённым `playbook` и заполненным `README.md`.
 
