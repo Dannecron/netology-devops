@@ -275,4 +275,52 @@ localhost                  : ok=3    changed=0    unreachable=0    failed=0    s
 
 > 12. Заполните `README.md` ответами на вопросы. Сделайте `git push` в ветку `master`. В ответе отправьте ссылку на ваш открытый репозиторий с изменённым `playbook` и заполненным `README.md`.
 
-//todo
+> * Где расположен файл с `some_fact` из второго пункта задания?
+
+[group_vars/all/example.yml](./playbook/group_vars/all/example.yml)
+
+> * Какая команда нужна для запуска вашего `playbook` на окружении `test.yml`?
+
+```shell
+ansible-playbook -i inventory/test.yml site.yml
+```
+
+> * Какой командой можно зашифровать файл?
+
+```shell
+ansible-vault encrypt <file>
+```
+
+> * Какой командой можно расшифровать файл?
+
+```shell
+ansible-vault decrypt <file>
+```
+
+> * Можно ли посмотреть содержимое зашифрованного файла без команды расшифровки файла? Если можно, то как?
+
+Возможно вывести содержимое файла без перезаписи в `stdout`:
+
+```shell
+ansible-vault decrypt --output - <file>
+```
+
+> * Как выглядит команда запуска `playbook`, если переменные зашифрованы?
+
+```shell
+ansible-playbook --ask-vault-pass -i inventory/test.yml site.yml
+```
+
+> * Как называется модуль подключения к host на windows?
+
+[winrm](https://docs.ansible.com/ansible/latest/user_guide/windows_setup.html#id9)
+
+> * Приведите полный текст команды для поиска информации в документации ansible для модуля подключений ssh
+
+```shell
+ansible-doc ansible.builtin.ssh connection
+```
+
+> * Какой параметр из модуля подключения `ssh` необходим для того, чтобы определить пользователя, под которым необходимо совершать подключение?
+
+Параметр [`remote_user`](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/ssh_connection.html#parameter-remote_user).
