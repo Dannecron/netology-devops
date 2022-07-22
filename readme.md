@@ -37,3 +37,4 @@
 * [7.5. Основы golang](/src/homework/07-terraform/7.5)
 * [7.6. Написание собственных провайдеров для Terraform](/src/homework/07-terraform/7.6)
 * [8.1. Введение в Ansible](/src/homework/08-ansible/8.1)
+* [8.2. Работа с Playbook](/src/homework/08-ansible/8.2)
