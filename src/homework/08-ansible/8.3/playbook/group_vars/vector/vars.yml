@@ -1,0 +1,6 @@
+---
+vector_version: 0.23.0
+vector_config_dir: /var/lib/vector
+vector_config:
+  data_dir: /var/lib/vector
+  # todo добавить конфигурацию https://vector.dev/docs/reference/configuration/
