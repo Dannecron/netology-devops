@@ -2,17 +2,20 @@
 - name: clickhouse
   hosts: clickhouse
   tasks:
-    - block:
-        - name: clickhouse | get distrib
+    - name: clickhouse | get distrib
+      block:
+        - name: clickhouse | get distrib noarch
           ansible.builtin.get_url:
             url: "https://packages.clickhouse.com/rpm/stable/{{ item }}-{{ clickhouse_version }}.noarch.rpm"
             dest: "./{{ item }}-{{ clickhouse_version }}.rpm"
+            mode: "755"
           with_items: "{{ clickhouse_packages }}"
       rescue:
-        - name: clickhouse | get distrib
+        - name: clickhouse | get distrib standard
           ansible.builtin.get_url:
             url: "https://packages.clickhouse.com/rpm/stable/clickhouse-common-static-{{ clickhouse_version }}.x86_64.rpm"
             dest: "./clickhouse-common-static-{{ clickhouse_version }}.rpm"
+            mode: "755"
     - name: clickhouse | install packages
       become: true
       ansible.builtin.yum:
@@ -62,7 +65,12 @@
       ansible.builtin.git:
         repo: "{{ lighthouse_vcs }}"
         dest: "{{ lighthouse_location }}"
-      # todo nginx forbidden 403 to the lighthouse/index.html
+        version: "{{ lighthouse_vcs_version }}"
+    - name: lighthouse | config selinux
+      become: true
+      ansible.builtin.command:
+        cmd: chcon -Rt httpd_sys_content_t /var/www
+      changed_when: false
     - name: lighthouse | install nginx
       become: true
       ansible.builtin.yum:
@@ -73,16 +81,21 @@
       ansible.builtin.template:
         src: "templates/nginx.conf.j2"
         dest: "/etc/nginx/nginx.conf"
+        mode: "755"
     - name: lighthouse | nginx lighthouse config
       become: true
       ansible.builtin.template:
         src: "templates/nginx.lighthouse.conf.j2"
         dest: "/etc/nginx/conf.d/lighthouse.conf"
+        mode: "755"
     - name: lighthouse | start nginx service
       become: true
       ansible.builtin.service:
         name: nginx
         state: started
+    - name: lighthouse | check service is accessible
+      ansible.builtin.uri:
+        url: http://localhost
   tags:
     - lighthouse
 
@@ -93,11 +106,12 @@
       become: true
       ansible.builtin.yum:
         name:
-            - tar
+          - tar
     - name: vector | get distrib
       ansible.builtin.get_url:
         url: "https://packages.timber.io/vector/{{ vector_version }}/vector-{{ vector_version }}-x86_64-unknown-linux-musl.tar.gz"
         dest: "./vector-{{ vector_version }}-x86_64-unknown-linux-musl.tar.gz"
+        mode: "755"
     - name: vector | unpack distrib
       ansible.builtin.unarchive:
         src: "./vector-{{ vector_version }}-x86_64-unknown-linux-musl.tar.gz"
@@ -111,7 +125,7 @@
         remote_src: true
         mode: "755"
     - name: vector | check installed version
-      ansible.builtin.shell:
+      ansible.builtin.command:
         cmd: vector --version
       register: result
       changed_when:
@@ -130,6 +144,7 @@
       ansible.builtin.template:
         src: "templates/vector.config.j2"
         dest: "{{ vector_config_dir }}/vector.yaml"
+        mode: "755"
     - name: vector | register as service
       become: true
       ansible.builtin.template:
