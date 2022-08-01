@@ -1,4 +1,4 @@
-Выполнение [домашнего задания](https://github.com/netology-code/mnt-homeworks/blob/MNT-13/08-ansible-02-playbook/README.md)
+Выполнение [домашнего задания](https://github.com/netology-code/mnt-homeworks/blob/MNT-13/08-ansible-03-yandex/README.md)
 по теме "8.3. Использование Yandex Cloud".
 
 ## Q/A
