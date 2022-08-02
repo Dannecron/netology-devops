@@ -7,3 +7,7 @@
   scm: git
   version: "1.0.1"
   name: lighthouse
+- src: git@github.com:Dannecron/netology-devops-ansible-vector.git
+  scm: git
+  version: "1.0.0"
+  name: vector
