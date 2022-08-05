@@ -1,0 +1,251 @@
+INFO     centos_7 scenario test matrix: dependency, lint, cleanup, destroy, syntax, create, prepare, converge, idempotence, side_effect, verify, cleanup, destroy
+INFO     Performing prerun with role_name_check=0...
+INFO     Set ANSIBLE_LIBRARY=~/.cache/ansible-compat/b9a93c/modules:~/.ansible/plugins/modules:/usr/share/ansible/plugins/modules
+INFO     Set ANSIBLE_COLLECTIONS_PATH=~/.cache/ansible-compat/b9a93c/collections:~/.ansible/collections:/usr/share/ansible/collections
+INFO     Set ANSIBLE_ROLES_PATH=~/.cache/ansible-compat/b9a93c/roles:~/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles
+INFO     Using ~/.cache/ansible-compat/b9a93c/roles/alexeysetevoi.clickhouse symlink to current repository in order to enable Ansible to find the role using its expected full name.
+INFO     Inventory ~/code/libs/ansible-clickhouse/molecule/centos_7/../resources/inventory/hosts.yml linked to ~/.cache/molecule/ansible-clickhouse/centos_7/inventory/hosts
+INFO     Inventory ~/code/libs/ansible-clickhouse/molecule/centos_7/../resources/inventory/group_vars/ linked to ~/.cache/molecule/ansible-clickhouse/centos_7/inventory/group_vars
+INFO     Inventory ~/code/libs/ansible-clickhouse/molecule/centos_7/../resources/inventory/host_vars/ linked to ~/.cache/molecule/ansible-clickhouse/centos_7/inventory/host_vars
+INFO     Running centos_7 > dependency
+INFO     Running ansible-galaxy collection install -v --pre community.docker:>=3.0.0-a2
+WARNING  Skipping, missing the requirements file.
+WARNING  Skipping, missing the requirements file.
+INFO     Inventory ~/code/libs/ansible-clickhouse/molecule/centos_7/../resources/inventory/hosts.yml linked to ~/.cache/molecule/ansible-clickhouse/centos_7/inventory/hosts
+INFO     Inventory ~/code/libs/ansible-clickhouse/molecule/centos_7/../resources/inventory/group_vars/ linked to ~/.cache/molecule/ansible-clickhouse/centos_7/inventory/group_vars
+INFO     Inventory ~/code/libs/ansible-clickhouse/molecule/centos_7/../resources/inventory/host_vars/ linked to ~/.cache/molecule/ansible-clickhouse/centos_7/inventory/host_vars
+INFO     Running centos_7 > lint
+WARNING  Listing 56 violation(s) that are fatal
+fqcn-builtins: Use FQCN for builtin actions.
+handlers/main.yml:3 Task/Handler: Restart Clickhouse Service
+
+schema: 7 is not one of ['6.1', '7.1', '7.2', 'all'] (schema[meta])
+meta/main.yml:1  Returned errors will not include exact line numbers, but they will mention
+the schema name being used as a tag, like ``playbook-schema``,
+``tasks-schema``.
+
+This rule is not skippable and stops further processing of the file.
+
+Schema bugs should be reported towards (https://github.com/ansible/schemas) project instead of ansible-lint.
+
+If incorrect schema was picked, you might want to either:
+
+* move the file to standard location, so its file is detected correctly.
+* use ``kinds:`` option in linter config to help it pick correct file type.
+
+
+fqcn-builtins: Use FQCN for builtin actions.
+molecule/centos_7/converge.yml:5 Task/Handler: Include ansible-clickhouse
+
+fqcn-builtins: Use FQCN for builtin actions.
+molecule/centos_7/verify.yml:8 Task/Handler: Example assertion
+
+fqcn-builtins: Use FQCN for builtin actions.
+molecule/centos_8/converge.yml:5 Task/Handler: Include ansible-clickhouse
+
+fqcn-builtins: Use FQCN for builtin actions.
+molecule/centos_8/verify.yml:8 Task/Handler: Example assertion
+
+schema: None is not of type 'object' (schema[inventory])
+molecule/resources/inventory/hosts.yml:1  Returned errors will not include exact line numbers, but they will mention
+the schema name being used as a tag, like ``playbook-schema``,
+``tasks-schema``.
+
+This rule is not skippable and stops further processing of the file.
+
+Schema bugs should be reported towards (https://github.com/ansible/schemas) project instead of ansible-lint.
+
+If incorrect schema was picked, you might want to either:
+
+* move the file to standard location, so its file is detected correctly.
+* use ``kinds:`` option in linter config to help it pick correct file type.
+
+
+fqcn-builtins: Use FQCN for builtin actions.
+molecule/resources/playbooks/converge.yml:5 Task/Handler: Apply Clickhouse Role
+
+fqcn-builtins: Use FQCN for builtin actions.
+molecule/ubuntu_focal/converge.yml:5 Task/Handler: Include ansible-clickhouse
+
+fqcn-builtins: Use FQCN for builtin actions.
+molecule/ubuntu_focal/verify.yml:8 Task/Handler: Example assertion
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/configure/db.yml:2 Task/Handler: Set ClickHose Connection String
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/configure/db.yml:5 Task/Handler: Gather list of existing databases
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/configure/db.yml:11 Task/Handler: Config | Delete database config
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/configure/db.yml:20 Task/Handler: Config | Create database config
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/configure/dict.yml:2 Task/Handler: Config | Generate dictionary config
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/configure/sys.yml:2 Task/Handler: Check clickhouse config, data and logs
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/configure/sys.yml:17 Task/Handler: Config | Create config.d folder
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/configure/sys.yml:26 Task/Handler: Config | Create users.d folder
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/configure/sys.yml:35 Task/Handler: Config | Generate system config
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/configure/sys.yml:45 Task/Handler: Config | Generate users config
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/configure/sys.yml:54 Task/Handler: Config | Generate remote_servers config
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/configure/sys.yml:65 Task/Handler: Config | Generate macros config
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/configure/sys.yml:76 Task/Handler: Config | Generate zookeeper servers config
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/configure/sys.yml:87 Task/Handler: Config | Fix interserver_http_port and intersever_https_port collision
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/install/apt.yml:5 Task/Handler: Install by APT | Apt-key add repo key
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/install/apt.yml:12 Task/Handler: Install by APT | Remove old repo
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/install/apt.yml:20 Task/Handler: Install by APT | Repo installation
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/install/apt.yml:27 Task/Handler: Install by APT | Package installation
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/install/apt.yml:36 Task/Handler: Install by APT | Package installation
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/install/apt.yml:45 Task/Handler: Hold specified version during APT upgrade | Package installation
+
+risky-file-permissions: File permissions unset or incorrect.
+tasks/install/apt.yml:45 Task/Handler: Hold specified version during APT upgrade | Package installation
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/install/dnf.yml:5 Task/Handler: Install by YUM | Ensure clickhouse repo GPG key imported
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/install/dnf.yml:12 Task/Handler: Install by YUM | Ensure clickhouse repo installed
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/install/dnf.yml:24 Task/Handler: Install by YUM | Ensure clickhouse package installed (latest)
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/install/dnf.yml:32 Task/Handler: Install by YUM | Ensure clickhouse package installed (version {{ clickhouse_version }})
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/install/yum.yml:5 Task/Handler: Install by YUM | Ensure clickhouse repo installed
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/install/yum.yml:16 Task/Handler: Install by YUM | Ensure clickhouse package installed (latest)
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/install/yum.yml:24 Task/Handler: Install by YUM | Ensure clickhouse package installed (version {{ clickhouse_version }})
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/main.yml:3 Task/Handler: Include OS Family Specific Variables
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/main.yml:39 Task/Handler: Notify Handlers Now
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/main.yml:45 Task/Handler: Wait for Clickhouse Server to Become Ready
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/params.yml:3 Task/Handler: Set clickhouse_service_enable
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/params.yml:7 Task/Handler: Set clickhouse_service_ensure
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/precheck.yml:1 Task/Handler: Requirements check | Checking sse4_2 support
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/precheck.yml:5 Task/Handler: Requirements check | Not supported distribution && release
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/remove.yml:3 Task/Handler: Remove clickhouse config,data and logs
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/remove/apt.yml:5 Task/Handler: Uninstall by APT | Package uninstallation
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/remove/apt.yml:12 Task/Handler: Uninstall by APT | Repo uninstallation
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/remove/apt.yml:18 Task/Handler: Uninstall by APT | Apt-key remove repo key
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/remove/dnf.yml:5 Task/Handler: Uninstall by YUM | Ensure clickhouse package uninstalled
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/remove/dnf.yml:12 Task/Handler: Uninstall by YUM | Ensure clickhouse repo uninstalled
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/remove/dnf.yml:19 Task/Handler: Uninstall by YUM | Ensure clickhouse key uninstalled
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/remove/yum.yml:5 Task/Handler: Uninstall by YUM | Ensure clickhouse package uninstalled
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/remove/yum.yml:12 Task/Handler: Uninstall by YUM | Ensure clickhouse repo uninstalled
+
+fqcn-builtins: Use FQCN for builtin actions.
+tasks/service.yml:3 Task/Handler: Ensure {{ clickhouse_service }} is enabled: {{ clickhouse_service_enable }} and state: {{ clickhouse_service_ensure }}
+
+var-spacing: Jinja2 variables and filters should have spaces before and after.
+vars/debian.yml:4 .clickhouse_repo_old
+
+You can skip specific rules or tags by adding them to your configuration file:
+# .config/ansible-lint.yml
+warn_list:  # or 'skip_list' to silence them completely
+  - experimental  # all rules tagged as experimental
+  - fqcn-builtins  # Use FQCN for builtin actions.
+  - var-spacing  # Jinja2 variables and filters should have spaces before and after.
+
+Finished with 53 failure(s), 3 warning(s) on 56 files.
+zsh:3: command not found: flake8
+WARNING  Retrying execution failure 127 of: y a m l l i n t   .
+ a n s i b l e - l i n t
+ f l a k e 8
+
+CRITICAL Lint failed with error code 127
+WARNING  An error occurred during the test sequence action: 'lint'. Cleaning up.
+INFO     Inventory ~/code/libs/ansible-clickhouse/molecule/centos_7/../resources/inventory/hosts.yml linked to ~/.cache/molecule/ansible-clickhouse/centos_7/inventory/hosts
+INFO     Inventory ~/code/libs/ansible-clickhouse/molecule/centos_7/../resources/inventory/group_vars/ linked to ~/.cache/molecule/ansible-clickhouse/centos_7/inventory/group_vars
+INFO     Inventory ~/code/libs/ansible-clickhouse/molecule/centos_7/../resources/inventory/host_vars/ linked to ~/.cache/molecule/ansible-clickhouse/centos_7/inventory/host_vars
+INFO     Running centos_7 > cleanup
+WARNING  Skipping, cleanup playbook not configured.
+INFO     Inventory ~/code/libs/ansible-clickhouse/molecule/centos_7/../resources/inventory/hosts.yml linked to ~/.cache/molecule/ansible-clickhouse/centos_7/inventory/hosts
+INFO     Inventory ~/code/libs/ansible-clickhouse/molecule/centos_7/../resources/inventory/group_vars/ linked to ~/.cache/molecule/ansible-clickhouse/centos_7/inventory/group_vars
+INFO     Inventory ~/code/libs/ansible-clickhouse/molecule/centos_7/../resources/inventory/host_vars/ linked to ~/.cache/molecule/ansible-clickhouse/centos_7/inventory/host_vars
+INFO     Running centos_7 > destroy
+INFO     Sanity checks: 'docker'
+
+PLAY [Destroy] *****************************************************************
+
+TASK [Destroy molecule instance(s)] ********************************************
+changed: [localhost] => (item=centos_7)
+
+TASK [Wait for instance(s) deletion to complete] *******************************
+FAILED - RETRYING: [localhost]: Wait for instance(s) deletion to complete (300 retries left).
+ok: [localhost] => (item=centos_7)
+
+TASK [Delete docker networks(s)] ***********************************************
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=2    changed=1    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
+
+INFO     Pruning extra files from scenario ephemeral directory
