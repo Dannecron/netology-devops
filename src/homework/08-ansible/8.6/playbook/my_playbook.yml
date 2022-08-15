@@ -1,0 +1,5 @@
+---
+- name: my playbook
+  hosts: localhost
+  roles:
+    - my_own_namespace.yandex_cloud_cvl.my_own_role
