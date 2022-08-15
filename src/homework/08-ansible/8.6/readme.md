@@ -170,12 +170,12 @@ ansible-galaxy collection init my_own_namespace.yandex_cloud_cvl
 
 > 9. В данную collection перенесите свой module в соответствующую директорию.
 
-Модуль размещён в директории `modules` в репозитории [netology-devops-ansible-yandex-cloud-cvl](https://github.com/Dannecron/netology-devops-ansible-yandex-cloud-cvl).
+Модуль размещён в директории `plugins/modules` в репозитории [netology-devops-ansible-yandex-cloud-cvl](https://github.com/Dannecron/netology-devops-ansible-yandex-cloud-cvl).
 
 > 10. Single task playbook преобразуйте в single task role и перенесите в collection.
 > У role должны быть default всех параметров module
 
-Роль размещена в директории `my_own_role` в репозитории [netology-devops-ansible-yandex-cloud-cvl](https://github.com/Dannecron/netology-devops-ansible-yandex-cloud-cvl).
+Роль размещена в директории `roles/my_own_role` в репозитории [netology-devops-ansible-yandex-cloud-cvl](https://github.com/Dannecron/netology-devops-ansible-yandex-cloud-cvl).
 
 > 11. Создайте playbook для использования этой role
 
@@ -197,7 +197,7 @@ Created collection for my_own_namespace.yandex_cloud_cvl at netology-devops-ansi
 
 > 14. Создайте ещё одну директорию любого наименования, перенесите туда single task playbook и архив c collection.
 
-Директория с playbook, который создан на шаге 11. 
+Использована директория с playbook, который создан на шаге 11. 
 
 > 15. Установите collection из локального архива: `ansible-galaxy collection install <archivename>.tar.gz`
 
