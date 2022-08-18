@@ -42,3 +42,4 @@
 * [8.4. Работа с Roles](/src/homework/08-ansible/8.4)
 * [8.5. Тестирование Roles](/src/homework/08-ansible/8.5)
 * [8.6. Создание собственных modules](/src/homework/08-ansible/8.6)
+* [9.1. Жизненный цикл ПО](/src/homework/09-ci/9.1)
