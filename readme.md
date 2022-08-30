@@ -44,3 +44,4 @@
 * [8.6. Создание собственных modules](/src/homework/08-ansible/8.6)
 * [9.1. Жизненный цикл ПО](/src/homework/09-ci/9.1)
 * [9.3. CI\CD](/src/homework/09-ci/9.3)
+* [9.4 Jenkins](/src/homework/09-ci/9.4)
