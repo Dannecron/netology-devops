@@ -63,17 +63,26 @@
         state: restarted
         enabled: true
       when: jenkins_installed is changed
+    - name: ensure github.com is a known host
+      lineinfile:
+        dest: ~/.ssh/known_hosts
+        create: yes
+        state: present
+        line: "{{ lookup('pipe', 'ssh-keyscan -t rsa github.com') }}"
+        regexp: "^github\\.com"
+  tags:
+    - jenkins-master
 
 - name: Prepare jenkins agent
   hosts: jenkins_agents
   become: true
   become_user: "{{ jenkins_user_name }}"
   tasks:
-    - name: Add master publickey into authorized_key
-      authorized_key:
-        user: "{{ jenkins_user_name }}"
-        state: present
-        key: "{{ hostvars['jenkins-master-01']['ssh_key_info']['ssh_public_key'] }}"
+#    - name: Add master publickey into authorized_key
+#      authorized_key:
+#        user: "{{ jenkins_user_name }}"
+#        state: present
+#        key: "{{ hostvars['jenkins-master-01']['ssh_key_info']['ssh_public_key'] }}"
     - name: Create agent_dir
       become_user: root
       file:
@@ -92,21 +101,56 @@
       yum:
         name:
           - git
-          - python3
           - docker-ce
           - docker-ce-cli
           - containerd.io
+          - gcc
+          - openssl-devel
+          - bzip2-devel
+          - libffi-devel
+          - zlib-devel
+          - xz-devel
         state: present
+    - name: Download python 3.8 distrib
+      ansible.builtin.get_url:
+        url: "https://www.python.org/ftp/python/3.8.12/Python-3.8.12.tgz"
+        dest: "{{ jenkins_agent_dir }}/Python-3.8.12.tgz"
+    - name: Unpack python 3.8 distrib
+      ansible.builtin.unarchive:
+        src: "{{ jenkins_agent_dir }}/Python-3.8.12.tgz"
+        dest: "{{ jenkins_agent_dir }}"
+        remote_src: true
+    - name: Configure python 3.8
+      ansible.builtin.shell:
+        cmd: ./configure --enable-optimizations
+        chdir: "{{ jenkins_agent_dir }}/Python-3.8.12"
+    - name: Install python 3.8
+      become_user: root
+      ansible.builtin.shell:
+        cmd: make altinstall
+        chdir: "{{ jenkins_agent_dir }}/Python-3.8.12"
+    - name: Create symbolic link python3
+      become_user: root
+      ansible.builtin.file:
+        src: /usr/local/bin/python3.8
+        dest: /usr/local/bin/python3
+        state: link
+    - name: Create symbolic link pip3
+      become_user: root
+      ansible.builtin.file:
+        src: /usr/local/bin/pip3.8
+        dest: /usr/local/bin/pip3
+        state: link
     - name: Update pip
       become_user: root
       pip:
-        executable: pip3
+        executable: /usr/local/bin/pip3
         name: pip
         extra_args: --upgrade
     - name: Install Ansible
       become_user: root
       pip:
-        executable: pip3
+        executable: /usr/local/bin/pip3
         name:
           - selinux
           - ansible<3.0
@@ -114,7 +158,7 @@
     - name: Reinstall Selinux
       become_user: root
       pip:
-        executable: pip3
+        executable: /usr/local/bin/pip3
         name:
           - selinux
         state: forcereinstall
@@ -128,7 +172,7 @@
       group:
         name: docker
         state: present
-    - name: Add jenkinsuser to dockergroup
+    - name: Add jenkins user to dockergroup
       become_user: root
       user:
         name: "{{ jenkins_user_name }}"
@@ -149,5 +193,14 @@
       timeout: 10
     - name: Install pip molecule
       ansible.builtin.pip:
-        executable: pip3
+        executable: /usr/local/bin/pip3
         name: molecule
+    - name: ensure github.com is a known host
+      lineinfile:
+        dest: ~/.ssh/known_hosts
+        create: yes
+        state: present
+        line: "{{ lookup('pipe', 'ssh-keyscan -t rsa github.com') }}"
+        regexp: "^github\\.com"
+  tags:
+    - jenkins-agent
