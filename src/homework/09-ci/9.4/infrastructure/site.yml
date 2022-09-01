@@ -133,24 +133,24 @@
       become_user: root
       ansible.builtin.file:
         src: /usr/local/bin/python3.8
-        dest: /usr/local/bin/python3
+        dest: /usr/bin/python3
         state: link
     - name: Create symbolic link pip3
       become_user: root
       ansible.builtin.file:
         src: /usr/local/bin/pip3.8
-        dest: /usr/local/bin/pip3
+        dest: /usr/bin/pip3
         state: link
     - name: Update pip
       become_user: root
       pip:
-        executable: /usr/local/bin/pip3
+        executable: /usr/bin/pip3
         name: pip
         extra_args: --upgrade
     - name: Install Ansible
       become_user: root
       pip:
-        executable: /usr/local/bin/pip3
+        executable: /usr/bin/pip3
         name:
           - selinux
           - ansible<3.0
@@ -158,7 +158,7 @@
     - name: Reinstall Selinux
       become_user: root
       pip:
-        executable: /usr/local/bin/pip3
+        executable: /usr/bin/pip3
         name:
           - selinux
         state: forcereinstall
@@ -192,10 +192,18 @@
       retries: 10
       timeout: 10
     - name: Install pip molecule
+      become_user: root
       ansible.builtin.pip:
-        executable: /usr/local/bin/pip3
-        name: molecule
-    - name: ensure github.com is a known host
+        executable: /usr/bin/pip3
+        name:
+          - molecule==3.5.2
+          - molecule-docker
+          - yamllint
+          - ansible-lint
+    - name: Update ansible community.docker collection
+      ansible.builtin.shell:
+        cmd: ansible-galaxy collection install community.docker
+    - name: Ensure github.com is a known host
       lineinfile:
         dest: ~/.ssh/known_hosts
         create: yes
