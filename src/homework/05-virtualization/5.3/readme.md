@@ -212,4 +212,4 @@ ansible-playbook publish.yml
 <...>
 ```
 
-Образ доступен по ссылке [gub.docker.com](https://hub.docker.com/layers/208296992/dannecron/netology-devops-nginx/ansible/images/sha256-e007739a276cbc1f556b674b1ec142360afe4fa35364f3a8b464e74786da4e3d?context=repo)
+Образ доступен по ссылке [hub.docker.com](https://hub.docker.com/layers/208296992/dannecron/netology-devops-nginx/ansible/images/sha256-e007739a276cbc1f556b674b1ec142360afe4fa35364f3a8b464e74786da4e3d?context=repo)

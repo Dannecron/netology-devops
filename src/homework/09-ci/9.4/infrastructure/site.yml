@@ -63,7 +63,8 @@
         state: restarted
         enabled: true
       when: jenkins_installed is changed
-    - name: ensure github.com is a known host
+    - name: Ensure github.com is a known host
+      become: true
       lineinfile:
         dest: ~/.ssh/known_hosts
         create: yes
@@ -78,11 +79,11 @@
   become: true
   become_user: "{{ jenkins_user_name }}"
   tasks:
-#    - name: Add master publickey into authorized_key
-#      authorized_key:
-#        user: "{{ jenkins_user_name }}"
-#        state: present
-#        key: "{{ hostvars['jenkins-master-01']['ssh_key_info']['ssh_public_key'] }}"
+    - name: Add master publickey into authorized_key
+      authorized_key:
+        user: "{{ jenkins_user_name }}"
+        state: present
+        key: "{{ hostvars['jenkins-master-01']['ssh_key_info']['ssh_public_key'] }}"
     - name: Create agent_dir
       become_user: root
       file:
@@ -141,6 +142,9 @@
         src: /usr/local/bin/pip3.8
         dest: /usr/bin/pip3
         state: link
+    - name: Add local to path
+      become_user: root
+      ansible.builtin.shell: echo "PATH=$PATH:/usr/local/bin" > /etc/environment
     - name: Update pip
       become_user: root
       pip:
@@ -162,11 +166,6 @@
         name:
           - selinux
         state: forcereinstall
-    - name: Add local to PATH
-      lineinfile:
-        dest: ~/.bashrc
-        regexp: export PATH=$PATH:/home/jenkins/.local/bin
-        line: export PATH=$PATH:/home/jenkins/.local/bin
     - name: Create docker group
       become_user: root
       group:
