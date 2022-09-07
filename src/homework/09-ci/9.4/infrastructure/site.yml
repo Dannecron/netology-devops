@@ -65,6 +65,7 @@
       when: jenkins_installed is changed
     - name: Ensure github.com is a known host
       become: true
+      become_user: "{{ jenkins_user_name }}"
       lineinfile:
         dest: ~/.ssh/known_hosts
         create: yes
