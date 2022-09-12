@@ -1,5 +1,5 @@
 Выполнение [домашнего задания](https://github.com/netology-code/mnt-homeworks/blob/MNT-13/09-ci-04-jenkins/README.md)
-по теме "9.3. Jenkins".
+по теме "9.4. Jenkins".
 
 ## Q/A
 

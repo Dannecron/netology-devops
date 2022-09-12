@@ -1,0 +1,3 @@
+files/*.pub
+inventory/hosts.yml
+roles/*
