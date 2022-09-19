@@ -46,3 +46,4 @@
 * [9.3. CI\CD](/src/homework/09-ci/9.3)
 * [9.4 Jenkins](/src/homework/09-ci/9.4)
 * [9.5. Teamcity](/src/homework/09-ci/9.5)
+* [9.6. Gitlab](/src/homework/09-ci/9.6)
