@@ -62,7 +62,76 @@
 > 
 > А также скриншот веб-интерфейса ПО chronograf (`http://localhost:8888`).
 
-// todo
+```shell
+curl -v http://localhost:8086/ping
+```
+
+```text
+*   Trying 127.0.0.1:8086...
+* TCP_NODELAY set
+* Connected to localhost (127.0.0.1) port 8086 (#0)
+> GET /ping HTTP/1.1
+> Host: localhost:8086
+> User-Agent: curl/7.68.0
+> Accept: */*
+>
+* Mark bundle as not supporting multiuse
+< HTTP/1.1 204 No Content
+< Content-Type: application/json
+< Request-Id: 8bb4e1e6-4069-11ed-8018-0242ac500203
+< X-Influxdb-Build: OSS
+< X-Influxdb-Version: 1.8.10
+< X-Request-Id: 8bb4e1e6-4069-11ed-8018-0242ac500203
+< Date: Fri, 30 Sep 2022 02:42:37 GMT
+<
+* Connection #0 to host localhost left intact
+```
+
+```shell
+curl http://localhost:8888
+```
+
+```html
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="/index.c708214f.css">
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+        <title>Chronograf</title>
+        <link rel="icon shortcut" href="/favicon.70d63073.ico">
+    </head>
+    <body> 
+    <div id="react-root" data-basepath=""></div> 
+    <script type="module" src="/index.e81b88ee.js"></script>
+    <script src="/index.a6955a67.js" nomodule="" defer></script> 
+    </body>
+</html>
+```
+
+```shell
+curl -v http://localhost:9092/kapacitor/v1/ping
+```
+
+```text
+*   Trying 127.0.0.1:9092...
+* TCP_NODELAY set
+* Connected to localhost (127.0.0.1) port 9092 (#0)
+> GET /kapacitor/v1/ping HTTP/1.1
+> Host: localhost:9092
+> User-Agent: curl/7.68.0
+> Accept: */*
+>
+* Mark bundle as not supporting multiuse
+< HTTP/1.1 204 No Content
+< Content-Type: application/json; charset=utf-8
+< Request-Id: dfe72552-4069-11ed-8029-0242ac500204
+< X-Kapacitor-Version: 1.6.5
+< Date: Fri, 30 Sep 2022 02:44:59 GMT
+<
+* Connection #0 to host localhost left intact
+```
+
+![chronograf_dashboard](./img/chronograf_dashboard.png)
 
 ### Задание 4
 
@@ -92,6 +161,8 @@
 >     - Приведите скриншот с отображением
 >     метрик утилизации места на диске (disk->host->telegraf_container_id) из веб-интерфейса.
 
+![chronograf_disk_utilization](./img/chronograf_disk_utilization.png)
+
 ### Задание 5
 
 > Добавьте в конфигурацию telegraf следующий плагин - [docker](https://github.com/influxdata/telegraf/tree/master/plugins/inputs/docker):
@@ -119,8 +190,34 @@
 > ```
 > 
 > После настройки перезапустите telegraf, обновите веб интерфейс и приведите скриншотом список `measurments` в
-> веб-интерфейсе базы telegraf.autogen . Там должны появиться метрики, связанные с docker.
+> веб-интерфейсе базы telegraf.autogen. Там должны появиться метрики, связанные с docker.
 > 
 > Факультативно можете изучить какие метрики собирает telegraf после выполнения данного задания.
 
-// todo
+Метрики docker уже подключены по умолчанию следующей конфигурацией telegraph:
+
+```text
+[[inputs.docker]]
+  endpoint = "unix:///var/run/docker.sock"
+  container_names = []
+  timeout = "5s"
+  perdevice = true
+  total = false
+```
+
+![chronograf_docker_metrics](./img/chronograf_docker_metrics.png)
+
+### Задание 6
+
+> Дополнительное задание 
+> 
+> В веб-интерфейсе откройте вкладку `Dashboards`. Попробуйте создать свой dashboard с отображением: 
+> - утилизации ЦПУ
+> - количества использованного RAM
+> - утилизации пространства на дисках
+> - количество поднятых контейнеров
+> - аптайм
+> - ...
+> - фантазируйте)
+
+![chronograf_new_dashboard](./img/chronograf_new_dashboard.png)
