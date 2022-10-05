@@ -1,5 +1,5 @@
 Выполнение [домашнего задания](https://github.com/netology-code/mnt-homeworks/blob/MNT-13/10-monitoring-03-grafana/README.md)
-по теме "10.3. Системы Grafana"
+по теме "10.3. Grafana"
 
 ## Q/A
 

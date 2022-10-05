@@ -49,4 +49,4 @@
 * [09.6. Gitlab](/src/homework/09-ci/9.6)
 * [10.1. Зачем и что нужно мониторить](/src/homework/10-monitoring/10.1)
 * [10.2. Системы мониторинга](/src/homework/10-monitoring/10.2)
-* [10.3. Системы Grafana](/src/homework/10-monitoring/10.3)
+* [10.3. Grafana](/src/homework/10-monitoring/10.3)
