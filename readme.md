@@ -50,3 +50,4 @@
 * [10.1. Зачем и что нужно мониторить](/src/homework/10-monitoring/10.1)
 * [10.2. Системы мониторинга](/src/homework/10-monitoring/10.2)
 * [10.3. Grafana](/src/homework/10-monitoring/10.3)
+* [10.4. ELK](/src/homework/10-monitoring/10.4)
