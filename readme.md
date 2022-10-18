@@ -51,3 +51,4 @@
 * [10.2. Системы мониторинга](/src/homework/10-monitoring/10.2)
 * [10.3. Grafana](/src/homework/10-monitoring/10.3)
 * [10.4. ELK](/src/homework/10-monitoring/10.4)
+* [10.5. Sentry](/src/homework/10-monitoring/10.5)
