@@ -1,4 +1,4 @@
-Выполнение [домашнего задания](https://github.com/netology-code/mnt-homeworks/blob/MNT-13/10-monitoring-05-sentry/README.md)
+Выполнение [домашнего задания](https://github.com/netology-code/mnt-homeworks/blob/MNT-13/10-monitoring-06-incident-management/README.md)
 по теме "10.6. Инцидент-менеджмент"
 
 ## Q/A
