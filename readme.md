@@ -52,3 +52,4 @@
 * [10.3. Grafana](/src/homework/10-monitoring/10.3)
 * [10.4. ELK](/src/homework/10-monitoring/10.4)
 * [10.5. Sentry](/src/homework/10-monitoring/10.5)
+* [10.6. Инцидент-менеджмент](/src/homework/10-monitoring/10.6)
