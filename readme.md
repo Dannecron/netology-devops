@@ -53,3 +53,4 @@
 * [10.4. ELK](/src/homework/10-monitoring/10.4)
 * [10.5. Sentry](/src/homework/10-monitoring/10.5)
 * [10.6. Инцидент-менеджмент](/src/homework/10-monitoring/10.6)
+* [11.1. Введение в микросервисы](/src/homework/11-microservices/11.1)
