@@ -55,3 +55,4 @@
 * [10.6. Инцидент-менеджмент](/src/homework/10-monitoring/10.6)
 * [11.1. Введение в микросервисы](/src/homework/11-microservices/11.1)
 * [11.2. Микросервисы: принципы](/src/homework/11-microservices/11.2)
+* [11.3. Микросервисы: подходы](/src/homework/11-microservices/11.3)
