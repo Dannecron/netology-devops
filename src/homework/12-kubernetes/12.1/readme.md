@@ -114,7 +114,7 @@ kubectl proxy --address='0.0.0.0' --disable-filter=true
 
 ```shell
 kubectl create deployment hello-node --image=k8s.gcr.io/echoserver:1.4\
-kubectl get deployments
+&& kubectl get deployments
 ```
 
 ```text
@@ -131,17 +131,36 @@ NAME                         READY   STATUS    RESTARTS   AGE
 hello-node-697897c86-wczpg   1/1     Running   0          69s
 ```
 
-Открытие `hello-node` для пользователей из-вне кластера:
+Установка дополнений (только `ingress`, так как `dashboard` включён по умолчанию):
 
 ```shell
-kubectl expose deployment hello-node --type=LoadBalancer --port=8080
-minikube service hello-node
+minikube addons enable ingress
 ```
 
-В таком случае в консоль будет выведен ip-адрес, который можно использовать для обращения к сервису,
-но только изнутри виртуальной машины.
+Проверка установки:
 
-// todo разобраться, как сделать доступным сервис из-вне
+```shell
+minikube addons list
+```
+
+```text
+|-----------------------------|----------|--------------|--------------------------------|
+|         ADDON NAME          | PROFILE  |    STATUS    |           MAINTAINER           |
+|-----------------------------|----------|--------------|--------------------------------|
+| ambassador                  | minikube | disabled     | 3rd party (Ambassador)         |
+| auto-pause                  | minikube | disabled     | Google                         |
+| csi-hostpath-driver         | minikube | disabled     | Kubernetes                     |
+| dashboard                   | minikube | enabled ✅   | Kubernetes                     |
+| default-storageclass        | minikube | enabled ✅   | Kubernetes                     |
+| ...                         | ...      | ...          | ...                            |
+| ingress                     | minikube | enabled ✅   | Kubernetes                     |
+| ingress-dns                 | minikube | disabled     | Google                         |
+| ...                         | ...      | ...          | ...                            || registry-creds              | minikube | disabled     | 3rd party (UPMC Enterprises)   |
+| storage-provisioner         | minikube | enabled ✅   | Google                         |
+| storage-provisioner-gluster | minikube | disabled     | 3rd party (Gluster)            |
+| volumesnapshots             | minikube | disabled     | Kubernetes                     |
+|-----------------------------|----------|--------------|--------------------------------|
+```
 
 ### Задание 3
 
@@ -151,15 +170,27 @@ minikube service hello-node
 > - подключиться к minikube
 > - проверить работу приложения из задания 2, запустив port-forward до кластера
 
-// todo
+Для подключения к `minikube` с другой машины необходимо:
+- Взять конфигурацию `~/.kube/config` с виртуальной машины и перенести её в `~/.kube/minikube-config` со следующими изменениями:
+  - закомментировать ключ `certificate-authority`, `client-certificate`, `client-key`
+  - заменить значение ключа `server` на ip-адрес виртуальной машины и порт `8001` (обязательно должна выполняться команда `kubectl proxy`)
 
-### Задание 4
+Пример полученного файла: [minikube-config](./minikube-config.yml)
 
-> Собрать через ansible
-> 
-> Профессионалы не делают одну и ту же задачу два раза. Давайте закрепим полученные навыки, автоматизировав выполнение заданий  ansible-скриптами.
-> При выполнении задания обратите внимание на доступные модули для k8s под ansible.
-> - собрать роль для установки minikube на сервисе (с установкой ingress)
-> - собрать роль для запуска в кластере hello world
+После этого можно выполнять команды по работе с кластером:
 
-// todo
+```shell
+ kubectl --kubeconfig ~/.kube/minikube-config cluster-info
+```
+
+```text
+Kubernetes control plane is running at http://84.252.137.29:8001
+CoreDNS is running at http://84.252.137.29:8001/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+```
+
+Судя по [статье](https://habr.com/ru/company/vk/blog/648117/), проброс порта для сервиса `minikube` может происходить тремя разными способами:
+- С помощью команды `minikube service <название сервиса>` 
+- Использовать команду `port-forward`, чтобы сопоставить сервис и `localhost`
+- Открыть порты (либо диапазоны портов) при запуске `minikube`
+
+Но ни один из этих способов не дал возможности делать запросы с локального хоста на сервис внутри кластера `minikube`

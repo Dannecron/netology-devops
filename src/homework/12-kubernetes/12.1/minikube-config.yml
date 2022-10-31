@@ -1,0 +1,32 @@
+apiersion: v1
+clusters:
+- cluster:
+    #certificate-authority: /home/dannc/.minikube/ca.crt
+    extensions:
+    - extension:
+        last-update: Mon, 31 Oct 2022 03:10:28 UTC
+        provider: minikube.sigs.k8s.io
+        version: v1.27.1
+      name: cluster_info
+    server: http://84.252.137.29:8001
+  name: minikube
+contexts:
+- context:
+    cluster: minikube
+    extensions:
+    - extension:
+        last-update: Mon, 31 Oct 2022 03:10:28 UTC
+        provider: minikube.sigs.k8s.io
+        version: v1.27.1
+      name: context_info
+    namespace: default
+    user: minikube
+  name: minikube
+current-context: minikube
+kind: Config
+preferences: {}
+users:
+- name: minikube
+  user:
+    #client-certificate: /home/dannc/.minikube/profiles/minikube/client.crt
+    #client-key: /home/dannc/.minikube/profiles/minikube/client.key
