@@ -1,0 +1,9 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: oke-kubeconfig-sa-token
+  namespace: default
+  annotations:
+    kubernetes.io/service-account.name: readonlyuser
+type: kubernetes.io/service-account-token

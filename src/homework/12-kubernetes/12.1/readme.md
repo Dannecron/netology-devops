@@ -1,5 +1,5 @@
 Выполнение [домашнего задания](https://github.com/netology-code/devkub-homeworks/blob/main/12-kubernetes-01-intro.md)
-по теме "12.1 Компоненты Kubernetes"
+по теме "12.1. Компоненты Kubernetes"
 
 ## Q/A
 

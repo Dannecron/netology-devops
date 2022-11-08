@@ -57,4 +57,5 @@
 * [11.2. Микросервисы: принципы](/src/homework/11-microservices/11.2)
 * [11.3. Микросервисы: подходы](/src/homework/11-microservices/11.3)
 * [11.4. Микросервисы: масштабирование](/src/homework/11-microservices/11.4)
-* [12.1 Компоненты Kubernetes](/src/homework/12-kubernetes/12.1)
+* [12.1. Компоненты Kubernetes](/src/homework/12-kubernetes/12.1)
+* [12.2. Команды для работы с Kubernetes](/src/homework/12-kubernetes/12.2)
