@@ -19,7 +19,7 @@
 > * наличие deployment можно проверить командой kubectl get deployment
 > * наличие подов можно проверить командой kubectl get pods
 
-Для начала необходимо описать спецификацию деплоймента: [hello_node_deployment.yml](./hello_node_deployment.yml).
+Для начала необходимо описать спецификацию деплоймента: [hello_node_deployment.yml](config/hello_node_deployment.yml).
 Затем при помощи утилиты `kubectl` применить данную конфигурацию к кластеру:
 
 ```shell
@@ -43,7 +43,7 @@ kubectl get pods
 
 ```text
 NAME                                     READY   STATUS    RESTARTS   AGE
-hello-node-deployment-58c649b5df-dwvb2   1/1     Running   0          113s
+hello-node-deployment-58c649b5df-4kgcv   1/1     Running   0          113s
 hello-node-deployment-58c649b5df-mhsbm   1/1     Running   0          113s
 ```
 
@@ -60,21 +60,21 @@ hello-node-deployment-58c649b5df-mhsbm   1/1     Running   0          113s
 > * пользователь может просматривать логи подов и их конфигурацию (kubectl logs pod <pod_id>, kubectl describe pod <pod_id>)
 
 Для достижения поставленной задачи необходимо:
-* создать сервисный аккаунт
+* создать сервисный аккаунт, используя спецификацию [service_account.yml](./config/service_account.yml)
     ```shell
-    kubectl create serviceaccount readonlyuser
+    kubectl apply -f service_account.yml
     ```
-* создать новую роль с доступами только на чтение данных подов:
+* создать новую роль с доступами только на чтение данных подов, используя спецификацию [role.yml](./config/role.yml):
     ```shell
-    kubectl create clusterrole readonlyrole --verb=get --verb=list --verb=watch --resource=pods
+    kubectl apply -f role.yml
     ```
-* создать объект `rolebinding`:
+* создать объект `rolebinding`, используя спецификацию [rolebinding.yml](./config/rolebinding.yml):
     ```shell
-    kubectl create clusterrolebinding readonlybinding --serviceaccount=default:readonlyuser --clusterrole=readonlyrole
+    kubectl apply -f rolebinding.yml
     ```
-* создать новый токен, используя спецификацию [serviceacc.yml](./serviceacc.yml)
+* создать новый токен, используя спецификацию [service_acc_secret.yml](config/service_acc_secret.yml)
     ```shell
-    kubectl apply -f serviceacc.yml
+    kubectl apply -f service_acc_secret.yml
     ```
 * получить токен, который был создан на предыдущем шаге:
     ```shell
@@ -114,22 +114,31 @@ no
 ```
 
 ```shell
-kubectl describe pod hello-node-deployment-58c649b5df-dwvb2
+kubectl describe pod hello-node-deployment-58c649b5df-4kgcv
 ```
 
 ```text
-Name:             hello-node-deployment-58c649b5df-dwvb2
+Name:             hello-node-deployment-58c649b5df-4kgcv
 Namespace:        default
 <...>
 ```
 
 ```shell
-kubectl logs hello-node-deployment-58c649b5df-dwvb2
+kubectl logs hello-node-deployment-58c649b5df-4kgcv
 ```
 
-// todo: forbidden
+```text
+127.0.0.1 - - [09/Nov/2022:03:15:15 +0000] "GET / HTTP/1.1" 200 384 "-" "curl/7.47.0"
+```
 
-    
+_note_ чтобы у пода появились логи, необходимо сделать хотя бы один http-запрос к нему.
+Это можно сделать, например, curl-запросом изнутри контейнера (необходимо перед этим вернуться в контекст админа `minikube`).
+
+```shell
+kubectl config use-context minikube
+kubectl exec --tty --stdin hello-node-deployment-58c649b5df-4kgcv -- /bin/sh
+curl http://localhost:8080
+```
 
 ### Задание 3
 
@@ -142,4 +151,24 @@ kubectl logs hello-node-deployment-58c649b5df-dwvb2
 > * в deployment из задания 1 изменено количество реплик на 5
 > * проверить что все поды перешли в статус running (kubectl get pods)
 
-// todo
+В спецификации [hello_node_deployment.yml](./config/hello_node_deployment.yml) нужно изменить `spec.replicas` на 5
+и заново применить конфигурацию:
+
+```shell
+kubectl apply -f hello_node_deployment.yml
+```
+
+```text
+deployment.apps/hello-node-deployment configured
+```
+
+Затем проверить состояние деплоймента:
+
+```shell
+kubectl get deployments
+```
+
+```text
+NAME                    READY   UP-TO-DATE   AVAILABLE   AGE
+hello-node-deployment   5/5     5            5           26m
+```
