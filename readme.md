@@ -60,3 +60,4 @@
 * [12.1. Компоненты Kubernetes](/src/homework/12-kubernetes/12.1)
 * [12.2. Команды для работы с Kubernetes](/src/homework/12-kubernetes/12.2)
 * [12.3. Развертывание кластера на собственных серверах, лекция 1](/src/homework/12-kubernetes/12.3)
+* [12.4. Развертывание кластера на собственных серверах, лекция 2](/src/homework/12-kubernetes/12.4)
