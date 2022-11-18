@@ -8,9 +8,9 @@ terraform {
 }
 
 provider "yandex" {
-  token     = "auth_token_here"
-  cloud_id  = "cloud_id_here"
-  folder_id = "folder_id_here"
+  token     = var.yandex_cloud_token
+  cloud_id  = var.yandex_cloud_id
+  folder_id = var.yandex_folder_id
   zone      = "ru-central1-a"
 }
 
@@ -26,7 +26,7 @@ resource "yandex_vpc_subnet" "subnet-1" {
 }
 
 resource "yandex_compute_instance" "k8s-control" {
-  name = "test-vm-1"
+  name = "control"
 
   resources {
     cores  = 2
@@ -35,7 +35,8 @@ resource "yandex_compute_instance" "k8s-control" {
 
   boot_disk {
     initialize_params {
-      image_id = "fd81hgrcv6lsnkremf32" # ubuntu-20-04-lts-v20210908
+      image_id = "fd8kdq6d0p8sij7h5qe3" # ubuntu-20-04-lts-v20220822
+      size = "20"
     }
   }
 
@@ -55,13 +56,14 @@ resource "yandex_compute_instance" "k8s-node" {
   name = each.key
 
   resources {
-    cores  = 1
-    memory = 1
+    cores  = 2
+    memory = 2
   }
 
   boot_disk {
     initialize_params {
-      image_id = "fd81hgrcv6lsnkremf32" # ubuntu-20-04-lts-v20210908
+      image_id = "fd8kdq6d0p8sij7h5qe3" # ubuntu-20-04-lts-v20220822
+      size = "20"
     }
   }
 
@@ -77,14 +79,14 @@ resource "yandex_compute_instance" "k8s-node" {
 
 output "control_ips" {
   value = {
-    external = yandex_compute_instance.k8s-control.network_interface.0.ip_address
-    internal = yandex_compute_instance.k8s-control.network_interface.0.nat_ip_address
+    internal = yandex_compute_instance.k8s-control.network_interface.0.ip_address
+    external = yandex_compute_instance.k8s-control.network_interface.0.nat_ip_address
   }
 }
 
 output "node_ips" {
   value = {
-    external = values(yandex_compute_instance.k8s-node)[*].network_interface.0.ip_address
-    internal = values(yandex_compute_instance.k8s-node)[*].network_interface.0.nat_ip_address
+    internal = values(yandex_compute_instance.k8s-node)[*].network_interface.0.ip_address
+    external = values(yandex_compute_instance.k8s-node)[*].network_interface.0.nat_ip_address
   }
 }
