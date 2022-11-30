@@ -17,9 +17,12 @@
 Директория с проектом приложения: [project](/src/homework/13-kubernates-config/project).
 
 В первую очередь необходимо собрать образы приложения и опубликовать их в `registry`,
-который будет доступен из кластера. Например, [hub.docker.com](https://hub.docker.com/)
+который будет доступен из кластера. Например, [hub.docker.com](https://hub.docker.com/).
 
-// todo
+Для этой цели создан репозиторий [dannecron/netology-devops-k8s-app](https://hub.docker.com/repository/docker/dannecron/netology-devops-k8s-app)
+и собраны два тега: `frontend-latest` и `backend-latest`.
+
+Итоговая конфигурация для деплоя приложения в кластер k8s будет выглядеть следующим образом: [testing/deployment.yml](./config/testing/deployment.yml).
 
 ### Задание 2
 

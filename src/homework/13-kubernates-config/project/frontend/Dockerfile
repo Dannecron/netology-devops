@@ -1,15 +1,15 @@
-FROM node:lts-buster as builder
+FROM node:16-buster as builder
 
 RUN mkdir /app
 
 WORKDIR /app
 
-ADD package.json /app/package.json
-ADD package-lock.json /app/package-lock.json
+COPY package.json /app/package.json
+COPY package-lock.json /app/package-lock.json
 
 RUN npm i
 
-ADD . /app
+COPY . /app
 
 RUN npm run build && rm -rf /app/node_modules
 
@@ -21,4 +21,4 @@ COPY --from=builder /app/ /app
 
 RUN mv /app/markup/* /app && rm -rf /app/markup
 
-ADD demo.conf /etc/nginx/conf.d/default.conf
+COPY demo.conf /etc/nginx/conf.d/default.conf

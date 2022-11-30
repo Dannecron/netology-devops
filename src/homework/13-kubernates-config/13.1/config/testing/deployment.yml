@@ -1,0 +1,82 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: testing-app
+  name: testing-app
+  namespace: default
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+        - image: dannecron/netology-devops-k8s-app:frontend-latest
+          imagePullPolicy: Always
+          name: netology-frontend
+        - image: dannecron/netology-devops-k8s-app:backend-latest
+          imagePullPolicy: Always
+          name: netology-backend
+          env:
+            - name: DATABASE_URL
+              value: "postgres://pg_user:pg_passwd@postgres:5432/news"
+      terminationGracePeriodSeconds: 30
+---
+apiVersion: apps/v1
+kind: StatefulSet
+
+metadata:
+  labels:
+    app: testing-app
+    db-kind: postgresql
+  name: testing-db
+  namespace: default
+
+spec:
+  serviceName: postgres
+  replicas: 1
+  podManagementPolicy: "Parallel"
+  updateStrategy:
+    type: "RollingUpdate"
+  selector:
+    matchLabels:
+      db-kind: postgresql
+  template:
+    metadata:
+      labels:
+        db-kind: postgresql
+    specs:
+      volumes: []
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: postgres
+          image: postgres:13-alpine
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - name: postgres
+              containerPort: 5432
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+          env:
+            - name: POSTGRES_USER
+              value: pg_user
+            - name: POSTGRES_PASSWORD
+              value: pg_passwd
+            - name: POSTGRES_DB
+              value: news
+            - name: PGDATA
+              value: /var/lib/postgresql/data
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgres
+    volumeClaimTemplates:
+      - metadata:
+          name: postgres
+        spec:
+          accessModes: [ "ReadWriteOnce" ]
+          resources:
+            requests:
+              storage: 10Gi
