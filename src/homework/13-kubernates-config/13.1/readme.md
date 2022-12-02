@@ -23,6 +23,30 @@
 и собраны два тега: `frontend-latest` и `backend-latest`.
 
 Итоговая конфигурация для деплоя приложения в кластер k8s будет выглядеть следующим образом: [testing/deployment.yml](./config/testing/deployment.yml).
+Здесь будет создано несколько сущностей, а именно:
+* `ConfigMap` для хранения конфигурации `postgresql`
+* `PersistentVolume` - персистентное дисковое хранилище для базы данных
+* `PersistentVolumeClaim` - конфигурация для использования хранилища подами
+* `StatefulSet` - разворачивание базы данных `postgresql`
+* `Deployment` - разворачивание непосредственно приложения
+
+Применение конфигурации:
+
+```shell
+kubectl apply -f testing/deployment.yml 
+```
+
+После применения:
+```shell
+kubectl get pods
+```
+
+```text
+kubectl get pods
+NAME                           READY   STATUS    RESTARTS        AGE
+testing-app-57d756f489-r6gw8   2/2     Running   0               4m13s
+testing-db-0                   1/1     Running   5 (6m20s ago)   7m53s
+```
 
 ### Задание 2
 
