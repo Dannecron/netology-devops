@@ -58,11 +58,29 @@ testing-db-0                   1/1     Running   5 (6m20s ago)   7m53s
 > * в окружении фронта прописан адрес сервиса бекенда;
 > * в окружении бекенда прописан адрес сервиса базы данных.
 
-// todo
+Разделение на отдельные деплойменты будет выглядеть следующим образом:
+* БД ([production/database.yml](./config/production/database.yml)) остаётся почти без изменений:
+  всё так же будут создаваться `ConfigMap`, `PersistentVolume`, `PersistentVolumeClaim` и сам `StatefulSet`
+* Для frontend ([production/frontend.yml](./config/production/frontend.yml)) и backend ([production/backend.yml](./config/production/backend.yml))
+  созданы собственные `deployment` и `service`.
 
-### Задание 3
+Как и в прошлом задании нужно применить данные конфигурации:
 
-> Приложению потребовалось внешнее api, и для его использования лучше добавить endpoint в кластер, направленный на это api. Требования:
-> * добавлен endpoint до внешнего api (например, геокодер).
+```shell
+kubectl apply -f production/database.yml
+kubectl apply -f production/backend.yml
+kubectl apply -f production/frontend.yml
+```
 
-// todo
+Затем нужно проверить, что все поды успешно запустились:
+
+```shell
+kubectl get pods
+```
+
+```text
+NAME                                READY   STATUS    RESTARTS   AGE
+prod-app-backend-784f995b5f-vvcr7   1/1     Running   0          84s
+prod-app-frontend-947f64949-6vtn7   1/1     Running   0          30s
+testing-db-0                        1/1     Running   0          4m15s
+```

@@ -83,6 +83,7 @@ ansible-playbook -u ubuntu -i inventory/mycluster/inventory.ini cluster.yml -b -
 
 ```shell
 ssh ubuntu@62.84.124.154
+mkdir ~/.kube
 sudo cp /etc/kubernetes/admin.conf ~/.kube/config
 sudo chown ubuntu:ubuntu ~/.kube/config
 ```
