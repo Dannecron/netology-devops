@@ -1,0 +1,49 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: prod-app
+    service: backend
+  name: prod-app-backend
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prod-app
+      service: backend
+  template:
+    metadata:
+      labels:
+        app: prod-app
+        service: backend
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - image: dannecron/netology-devops-k8s-app:backend-latest
+          imagePullPolicy: Always
+          name: netology-backend
+          env:
+            - name: DATABASE_URL
+              value: "postgres://pg_user:pg_passwd@postgres:5432/news"
+          volumeMounts:
+            - mountPath: "/shared"
+              name: shared-volume
+      volumes:
+        - name: shared-volume
+          persistentVolumeClaim:
+            claimName: pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prod-backend
+  namespace: default
+spec:
+  ports:
+    - name: web
+      port: 9000
+  selector:
+    app: prod-app
+    service: backend

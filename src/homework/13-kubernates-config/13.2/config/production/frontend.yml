@@ -1,0 +1,49 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: prod-app
+    service: frontend
+  name: prod-app-frontend
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prod-app
+      service: frontend
+  template:
+    metadata:
+      labels:
+        app: prod-app
+        service: frontend
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - image: dannecron/netology-devops-k8s-app:frontend-latest
+          imagePullPolicy: Always
+          name: netology-frontend
+          env:
+            - name: BASE_URL
+              value: "http://prod-backend:9000"
+          volumeMounts:
+            - mountPath: "/shared"
+              name: shared-volume
+      volumes:
+        - name: shared-volume
+          persistentVolumeClaim:
+            claimName: pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prod-frontend
+  namespace: default
+spec:
+  ports:
+    - name: web
+      port: 80
+  selector:
+    app: prod-app
+    service: frontend
