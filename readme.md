@@ -64,3 +64,4 @@
 * [12.5. Сетевые решения CNI](/src/homework/12-kubernetes/12.5)
 * [13.1. контейнеры, поды, deployment, statefulset, services, endpoints](/src/homework/13-kubernates-config/13.1)
 * [13.2. разделы и монтирование](/src/homework/13-kubernates-config/13.2)
+* [13.3. работа с kubectl](/src/homework/13-kubernates-config/13.3)
