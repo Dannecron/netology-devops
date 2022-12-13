@@ -25,7 +25,10 @@ spec:
           name: netology-backend
           env:
             - name: DATABASE_URL
-              value: "postgres://pg_user:pg_passwd@postgres:5432/news"
+              value: "postgresql://db_user:db_passwd@postgres:5432/news"
+          ports:
+            - name: web
+              containerPort: 9000
       terminationGracePeriodSeconds: 30
 ---
 apiVersion: v1
