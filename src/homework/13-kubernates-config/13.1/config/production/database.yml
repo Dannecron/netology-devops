@@ -48,7 +48,7 @@ metadata:
     app: prod-app
     service: database
     db-kind: postgresql
-  name: testing-db
+  name: prod-db
   namespace: default
 spec:
   selector:
@@ -74,7 +74,9 @@ spec:
           image: postgres:13-alpine # Sets Image
           imagePullPolicy: "IfNotPresent"
           ports:
-            - containerPort: 5432  # Exposes container port
+            - name: postgresql
+              containerPort: 5432
+              protocol: TCP
           envFrom:
             - configMapRef:
                 name: postgres-config
@@ -85,3 +87,19 @@ spec:
         - name: postgredb
           persistentVolumeClaim:
             claimName: postgres-pv-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - name: postgresql
+      port: 5432
+      targetPort: postgresql
+      protocol: TCP
+  selector:
+    service: database
+    db-kind: postgresql
