@@ -29,13 +29,13 @@ supplementary_addresses_in_ssl_keys: [51.250.6.171]
 значение ключа `server` на внешний ip-адрес `control-node`.
 
 ```shell
-scp ubuntu@51.250.6.171:/home/ubuntu/.kube/config .kube/kubespray-do.conf
+scp ubuntu@51.250.6.171:/home/ubuntu/.kube/config ~/.kube/kubespray-do.conf
 ```
 
 Затем нужно установить данный конфиг для `kubectl` для текущей сессии терминала и выполнить проверку доступности кластера:
 
 ```shell
-export KUBECONFIG=$PWD/kubespray-do.conf
+export KUBECONFIG=~/.kube/kubespray-do.conf
 kubectl get pods -A
 ```
 
@@ -47,7 +47,40 @@ kube-system   coredns-74d6c5659f-l2hfb          1/1     Running   0             
 <...>
 ```
 
-// todo
+Для подключения к базе данных необходимо запустить `port-forward` на локальной машине к сервису `postgresql`:
+
+```shell
+kubectl port-forward service/postgres 5432:5432
+```
+
+```text
+Forwarding from 127.0.0.1:5432 -> 5432
+Forwarding from [::1]:5432 -> 5432
+```
+
+Не закрывая данную сессию терминала нужно выполнить запуск контейнера `postgresql` с утилитой `psql` в качестве входной точки:
+
+```shell
+docker run --rm -it --network=host --entrypoint=/bin/sh postgres:13-alpine -c "psql postgresql://db_user:db_passwd@localhost:5432/news"
+```
+
+В этом случае будет инициировано подключение к проброшенному порту на локальной машине без необходимости дополнительно конфигурировать
+сети docker-контейнеров. Следующим шагом можно проверить, что пользователю видны таблицы из БД:
+
+```text
+news=# \d
+```
+
+```text
+             List of relations
+ Schema |    Name     |   Type   |  Owner
+--------+-------------+----------+---------
+ public | news        | table    | db_user
+ public | news_id_seq | sequence | db_user
+(2 rows)
+```
+
+// todo frontend and backend
 
 ### Задание 2
 
