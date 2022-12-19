@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-{{ .Values.environment }}-postgres-config
+  labels:
+    app: {{ .Chart.Name }}-{{ .Values.environment }}
+    service: database
+  namespace: {{ .Values.namespace }}
+data:
+  POSTGRES_DB: {{ .Values.database.settings.dbName }}
+  POSTGRES_USER: {{ .Values.database.settings.user }}
+  POSTGRES_PASSWORD: {{ .Values.database.settings.password }}
+  PGDATA: {{ .Values.database.settings.dbPath | quote }}

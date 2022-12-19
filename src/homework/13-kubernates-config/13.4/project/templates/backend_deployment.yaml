@@ -1,0 +1,34 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Chart.Name }}-{{ .Values.environment }}
+    service: backend
+  name: {{ .Chart.Name }}-{{ .Values.environment }}-backend
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.backend.replicasCount }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}-{{ .Values.environment }}
+      service: backend
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}-{{ .Values.environment }}
+        service: backend
+    spec:
+      containers:
+        - image: {{ .Values.image.name }}:backend-latest
+          imagePullPolicy: Always
+          name: backend
+          env:
+            - name: DATABASE_URL
+              value: "postgresql://{{ .Values.database.settings.user }}:{{ .Values.database.settings.password }}@postgres:5432/{{ .Values.database.settings.dbName }}"
+          ports:
+            - name: web
+              containerPort: 9000
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }}
+      terminationGracePeriodSeconds: 30

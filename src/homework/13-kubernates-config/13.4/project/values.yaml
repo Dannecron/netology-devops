@@ -1,0 +1,33 @@
+environment: production
+namespace: app1
+
+image:
+  name: dannecron/netology-devops-k8s-app
+
+backend:
+  replicasCount: 1
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+frontend:
+  replicasCount: 1
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+database:
+  settings:
+    user: db_user
+    password: db_passwd
+    dbName: news
+    dbPath: "/var/lib/postgresql/data"
+  hostVolumePath: "/mnt/pgsql_data"

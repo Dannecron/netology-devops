@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Chart.Name }}-{{ .Values.environment }}-postgres-pv-claim
+  labels:
+    app: {{ .Chart.Name }}-{{ .Values.environment }}
+    service: database
+  namespace: {{ .Values.namespace }}
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi

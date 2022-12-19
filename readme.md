@@ -44,7 +44,7 @@
 * [08.6. Создание собственных modules](/src/homework/08-ansible/8.6)
 * [09.1. Жизненный цикл ПО](/src/homework/09-ci/9.1)
 * [09.3. CI\CD](/src/homework/09-ci/9.3)
-* [09.4 Jenkins](/src/homework/09-ci/9.4)
+* [09.4. Jenkins](/src/homework/09-ci/9.4)
 * [09.5. Teamcity](/src/homework/09-ci/9.5)
 * [09.6. Gitlab](/src/homework/09-ci/9.6)
 * [10.1. Зачем и что нужно мониторить](/src/homework/10-monitoring/10.1)
@@ -65,3 +65,4 @@
 * [13.1. контейнеры, поды, deployment, statefulset, services, endpoints](/src/homework/13-kubernates-config/13.1)
 * [13.2. разделы и монтирование](/src/homework/13-kubernates-config/13.2)
 * [13.3. работа с kubectl](/src/homework/13-kubernates-config/13.3)
+* [13.4. инструменты для упрощения написания конфигурационных файлов. Helm и Jsonnet](/src/homework/13-kubernates-config/13.4)

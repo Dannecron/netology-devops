@@ -1,0 +1,18 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Chart.Name }}-{{ .Values.environment }}-database
+  namespace: {{ .Values.namespace }}
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - name: {{ .Chart.Name }}-{{ .Values.environment }}-postgresql
+      port: 5432
+      targetPort: 5432
+      protocol: TCP
+  selector:
+    app: {{ .Chart.Name }}-{{ .Values.environment }}
+    service: database
+    db-kind: postgresql

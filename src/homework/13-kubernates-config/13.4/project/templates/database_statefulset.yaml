@@ -1,0 +1,47 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: {{ .Chart.Name }}-{{ .Values.environment }}
+    service: database
+    db-kind: postgresql
+  name: {{ .Chart.Name }}-{{ .Values.environment }}-database
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}-{{ .Values.environment }}
+      service: database
+      db-kind: postgresql
+  serviceName: postgres
+  replicas: 1
+  podManagementPolicy: "Parallel"
+  updateStrategy:
+    type: "RollingUpdate"
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}-{{ .Values.environment }}
+        service: database
+        db-kind: postgresql
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: postgres
+          image: postgres:13-alpine
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - name: postgresql
+              containerPort: 5432
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ .Chart.Name }}-{{ .Values.environment }}-postgres-config
+          volumeMounts:
+            - mountPath: {{ .Values.database.settings.dbPath | quote }}
+              name: {{ .Chart.Name }}-{{ .Values.environment }}-postgres-volume
+      volumes:
+        - name: {{ .Chart.Name }}-{{ .Values.environment }}-postgres-volume
+          persistentVolumeClaim:
+            claimName: {{ .Chart.Name }}-{{ .Values.environment }}-postgres-pv-claim
