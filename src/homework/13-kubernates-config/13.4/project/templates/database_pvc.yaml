@@ -6,7 +6,6 @@ metadata:
   labels:
     app: {{ .Chart.Name }}-{{ .Values.environment }}
     service: database
-  namespace: {{ .Values.namespace }}
 spec:
   storageClassName: manual
   accessModes:

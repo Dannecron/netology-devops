@@ -6,7 +6,6 @@ metadata:
     app: {{ .Chart.Name }}-{{ .Values.environment }}
     service: backend
   name: {{ .Chart.Name }}-{{ .Values.environment }}-backend
-  namespace: {{ .Values.namespace }}
 spec:
   replicas: {{ .Values.backend.replicasCount }}
   selector:

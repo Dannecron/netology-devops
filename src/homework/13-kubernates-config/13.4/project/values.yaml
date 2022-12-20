@@ -1,5 +1,4 @@
 environment: production
-namespace: app1
 
 image:
   name: dannecron/netology-devops-k8s-app

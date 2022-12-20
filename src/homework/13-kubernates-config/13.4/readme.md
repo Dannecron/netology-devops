@@ -33,7 +33,7 @@ Helm-чарт находится в директории [project](./project). �
 kubectl create namespace app1
 ```
 
-И убедиться, что новые неймспесы есть в списке:
+И убедиться, что новый неймспейс есть в списке:
 
 ```shell
 kubectl get ns
@@ -48,16 +48,16 @@ kube-public       Active   35m
 kube-system       Active   35m
 ```
 
-По умолчанию задан `namespace=app1`, таким образом для деплоя chart необходимо выполнить команду:
+Для деплоя chart необходимо выполнить команду:
 
 ```shell
-helm install netology-project project
+helm install --namespace=app1 netology-project project
 ```
 
 ```text
 NAME: netology-project
-LAST DEPLOYED: Mon Dec 19 10:36:23 2022
-NAMESPACE: default
+LAST DEPLOYED: Tue Dec 20 10:46:14 2022
+NAMESPACE: app1
 STATUS: deployed
 REVISION: 1
 TEST SUITE: None
@@ -73,12 +73,12 @@ Deployed version 1.0.0.
 Следующим шагом нужно проверить, что chart появился в списке:
 
 ```shell
-helm list
+helm list --namespace=app1
 ```
 
 ```text
 NAME                    NAMESPACE       REVISION        UPDATED                                 STATUS CHART            APP VERSION
-netology-project        default         1               2022-12-19 10:36:23.9408923 +0700 +07   deployeproject-1.0.0    1.0.0
+netology-project        app1            1               2022-12-20 10:46:14.3054387 +0700 +07   deployeproject-1.0.0    1.0.0
 ```
 
 И что все поды запустились:
@@ -89,22 +89,23 @@ kubectl get po --namespace app1
 
 ```text
 NAME                                           READY   STATUS    RESTARTS   AGE
-database-0                                     1/1     Running   0          113s
-project-production-backend-768887dd4b-vn4ct    1/1     Running   0          113s
-project-production-frontend-74d8bb648d-w9wlz   1/1     Running   0          113s
+project-production-backend-768887dd4b-8zb7h    1/1     Running   0          102s
+project-production-database-0                  1/1     Running   0          102s
+project-production-frontend-74d8bb648d-9tc6g   1/1     Running   0          102s
 ```
 
-Предполагается, что в том же неймспейсе необходимо развернуть данное приложение, но с другим `environment` и с количеством реплик = 2.
+Предполагается, что в том же неймспейсе необходимо развернуть данное приложение, но с другим `environment`
+и с количеством реплик backend равным 2.
 Для этого нужно выполнить следующую команду:
 
 ```shell
-helm install --set "environment=testing" --set "backend.replicasCount=2" netology-project-test project
+helm install --namespace=app1 --set "environment=testing" --set "backend.replicasCount=2" netology-project-test project
 ```
 
 ```text
 NAME: netology-project-test
-LAST DEPLOYED: Mon Dec 19 10:51:48 2022
-NAMESPACE: default
+LAST DEPLOYED: Tue Dec 20 10:48:34 2022
+NAMESPACE: app1
 STATUS: deployed
 REVISION: 1
 TEST SUITE: None
@@ -125,26 +126,59 @@ kubectl get po --namespace app1
 
 ```text
 NAME                                           READY   STATUS    RESTARTS   AGE
-database-0                                     1/1     Running   0          15m
-project-production-backend-768887dd4b-vn4ct    1/1     Running   0          15m
-project-production-frontend-74d8bb648d-w9wlz   1/1     Running   0          15m
-project-testing-backend-688cb58bdc-74k2m       1/1     Running   0          21s
-project-testing-backend-688cb58bdc-r97xv       1/1     Running   0          21s
-project-testing-database-0                     1/1     Running   0          21s
-project-testing-frontend-7648dfbcb6-th89l      1/1     Running   0          21s
+project-production-backend-768887dd4b-8zb7h    1/1     Running   0          2m38s
+project-production-database-0                  1/1     Running   0          2m38s
+project-production-frontend-74d8bb648d-9tc6g   1/1     Running   0          2m38s
+project-testing-backend-688cb58bdc-5fqfd       1/1     Running   0          19s
+project-testing-backend-688cb58bdc-hz9jp       1/1     Running   0          19s
+project-testing-database-0                     1/1     Running   0          18s
+project-testing-frontend-7648dfbcb6-t7mv9      1/1     Running   0          19s
 ```
 
 Затем необходимо сделать деплой в новый неймспейс. Для этого необходимо выполнить команду:
 
 ```shell
-helm install --set "namespace=app2" --namespace=app2 --create-namespace netology-project project
+helm install --namespace=app2 --create-namespace netology-project-app2 project
 ```
 
-// todo ошибка
-> Error: INSTALLATION FAILED: rendered manifests contain a resource that already exists.
-> Unable to continue with install: PersistentVolume "project-production-postgres-pv-volume" in namespace "" exists
-> and cannot be imported into the current release: invalid ownership metadata;
-> annotation validation error: key "meta.helm.sh/release-name" must equal "netology-project-app2":
-> current value is "netology-project";
-> annotation validation error: key "meta.helm.sh/release-namespace" must equal "app2":
-> current value is "default"
+```text
+NAME: netology-project
+LAST DEPLOYED: Tue Dec 20 10:53:35 2022
+NAMESPACE: app2
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+---------------------------------------------------------
+
+Content of NOTES.txt appears after deploy.
+Deployed version 1.0.0.
+
+---------------------------------------------------------
+```
+
+Далее нужно проверить, что деплой прошёл и поды запустились:
+
+```shell
+helm --namespace=app2 list
+```
+
+```text
+NAME                    NAMESPACE       REVISION        UPDATED                                 STATUS CHART            APP VERSION
+netology-project        app2            1               2022-12-20 10:53:35.7784271 +0700 +07   deployeproject-1.0.0    1.0.0
+```
+
+```shell
+kubectl get po --namespace=app2
+```
+
+```text
+NAME                                           READY   STATUS    RESTARTS   AGE
+project-production-backend-768887dd4b-m8sb7    1/1     Running   0          101s
+project-production-database-0                  1/1     Running   0          101s
+project-production-frontend-74d8bb648d-wrm49   1/1     Running   0          101s
+```
+
+
+_Note:_ Была проблема с созданием `PV`. По всей видимости вольюм создаётся глобально, вне неймспейсов.
+Таким образом, пришлось сделать название объекта `PV` зависимым от неймспейса, в котором запускается деплой `helm`.

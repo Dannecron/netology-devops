@@ -7,7 +7,6 @@ metadata:
     service: database
     db-kind: postgresql
   name: {{ .Chart.Name }}-{{ .Values.environment }}-database
-  namespace: {{ .Values.namespace }}
 spec:
   selector:
     matchLabels:
