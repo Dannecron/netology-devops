@@ -1,0 +1,15 @@
+apiVersion: qbec.io/v1alpha1
+kind: App
+metadata:
+  name: project
+spec:
+  environments:
+    stage:
+      defaultNamespace: "default"
+      server: https://51.250.85.245:6443
+      excludes:
+        - local_google
+    production:
+      defaultNamespace: "production"
+      server: https://51.250.85.245:6443
+  vars: {}

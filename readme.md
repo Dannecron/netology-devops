@@ -66,3 +66,4 @@
 * [13.2. разделы и монтирование](/src/homework/13-kubernates-config/13.2)
 * [13.3. работа с kubectl](/src/homework/13-kubernates-config/13.3)
 * [13.4. инструменты для упрощения написания конфигурационных файлов. Helm и Jsonnet](/src/homework/13-kubernates-config/13.4)
+* [13.5. поддержка нескольких окружений на примере Qbec](/src/homework/13-kubernates-config/13.5)
