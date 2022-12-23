@@ -14,7 +14,7 @@
 > * регулируется с помощью deployment фронтенд и бекенд;
 > * база данных — через statefulset.
 
-Директория с проектом приложения: [project](/src/homework/13-kubernates-config/project).
+Директория с проектом приложения: [project](/src/homework/13-kubernetes-config/project).
 
 В первую очередь необходимо собрать образы приложения и опубликовать их в `registry`,
 который будет доступен из кластера. Например, [hub.docker.com](https://hub.docker.com/).

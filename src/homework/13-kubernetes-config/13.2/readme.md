@@ -19,7 +19,7 @@
 > * в поде подключена общая папка между контейнерами (например, /static);
 > * после записи чего-либо в контейнере с беком файлы можно получить из контейнера с фронтом.
 
-Для деплоя приложения будет использована [спецификация из предыдущего домашнего задания](/src/homework/13-kubernates-config/13.1/config/testing) с некоторыми отличиями:
+Для деплоя приложения будет использована [спецификация из предыдущего домашнего задания](/src/homework/13-kubernetes-config/13.1/config/testing) с некоторыми отличиями:
 
 1. В deployment `testing-app` добавлен том `emptyDir` с названием `shared-volume`
     
@@ -111,7 +111,7 @@ kubectl apply -f testing/deployment.yml
     sudo apt install nfs-common
     ```
 
-Для деплоя приложения будет использована [спецификация из предыдущего домашнего задания](/src/homework/13-kubernates-config/13.1/config/production) с некоторыми отличиями:
+Для деплоя приложения будет использована [спецификация из предыдущего домашнего задания](/src/homework/13-kubernetes-config/13.1/config/production) с некоторыми отличиями:
 
 1. Создан отдельный манифест для создания общего динамичного хранилища: [production/volume.yml](./config/production/volume.yml)
 2. В deployment для `backend` и `frontend` добавлен том `shared-volume` и точка его монтирования в `/shared` 
