@@ -1,0 +1,32 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: test
+  name: test-pod
+  namespace: default
+spec:
+  containers:
+    - image: praqma/network-multitool:alpine-extra
+      imagePullPolicy: IfNotPresent
+      name: test-container
+      env:
+        - name: SOME_USER
+          valueFrom:
+            secretKeyRef:
+              name: test-secret
+              key: user
+        - name: SOME_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: test-secret
+              key: password
+      volumeMounts:
+        - mountPath: "/etc/nginx/ssl"
+          name: "certs"
+          readOnly: true
+  volumes:
+    - name: "certs"
+      secret:
+        secretName: domain-cert
