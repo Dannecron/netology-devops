@@ -1,0 +1,50 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test-env-config
+  labels:
+    app: test
+data:
+  SOME_USER: user
+  SOME_PASSWORD: passwd
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test-file-config
+  labels:
+    app: test
+data:
+  foo.json: |
+    {"foo": "bar", "baz": 123}
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: test
+  name: test-pod
+  namespace: default
+spec:
+  containers:
+    - image: praqma/network-multitool:alpine-extra
+      imagePullPolicy: IfNotPresent
+      name: test-container
+      env:
+        - name: SOME_NGINX_USER
+          valueFrom:
+            configMapKeyRef:
+              name: test-env-config
+              key: SOME_USER
+      envFrom:
+        - configMapRef:
+            name: test-env-config
+      volumeMounts:
+        - mountPath: "/opt/config"
+          name: "config"
+          readOnly: true
+  volumes:
+    - name: "config"
+      configMap:
+        name: test-file-config
