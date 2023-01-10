@@ -70,3 +70,4 @@
 * [14.1. Создание и использование секретов](/src/homework/14-kubernetes-security/14.1)
 * [14.2. Синхронизация секретов с внешними сервисами. Vault](/src/homework/14-kubernetes-security/14.2)
 * [14.3. Карты конфигураций](/src/homework/14-kubernetes-security/14.3)
+* [14.4. Сервис-аккаунты](/src/homework/14-kubernetes-security/14.4)
