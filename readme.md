@@ -71,3 +71,4 @@
 * [14.2. Синхронизация секретов с внешними сервисами. Vault](/src/homework/14-kubernetes-security/14.2)
 * [14.3. Карты конфигураций](/src/homework/14-kubernetes-security/14.3)
 * [14.4. Сервис-аккаунты](/src/homework/14-kubernetes-security/14.4)
+* [14.5. SecurityContext, NetworkPolicies](/src/homework/14-kubernetes-security/14.5)
