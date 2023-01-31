@@ -142,6 +142,19 @@ resource "yandex_vpc_route_table" "private_egress" {
 }
 ```
 
+После создания таблицы маршрутизации, необходимо привязать её к приватной подсети. Для этого в блок конфигурации ресурса `"yandex_vpc_subnet" "private"`
+необходимо добавить параметр `route_table_id`. Результат будет следующим:
+
+```terraform
+resource "yandex_vpc_subnet" "private" {
+  name = "subnet_private"
+  zone = "ru-central1-a"
+  network_id = yandex_vpc_network.network-vpc.id
+  v4_cidr_blocks = ["192.168.20.0/24"]
+  route_table_id = yandex_vpc_route_table.private_egress.id
+}
+```
+
 > - Создать в этой приватной подсети виртуалку с внутренним IP, подключиться к ней через виртуалку, созданную ранее и убедиться что есть доступ к интернету
 
 ```terraform
@@ -182,5 +195,7 @@ curl -sS -D - -o /dev/null https://google.com
 ```
 
 ```text
-todo Что-то идёт не так и запрос не проходит. tracepath виснет на _gateway шаге (сразу после localhost). 
+ HTTP/2 301
+location: https://www.google.com/
+<...>
 ```
