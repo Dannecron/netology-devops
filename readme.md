@@ -73,3 +73,4 @@
 * [14.4. Сервис-аккаунты](/src/homework/14-kubernetes-security/14.4)
 * [14.5. SecurityContext, NetworkPolicies](/src/homework/14-kubernetes-security/14.5)
 * [15.1. Организация сети](/src/homework/15-cloud-providers/15.1)
+* [15.2. Вычислительные мощности. Балансировщики нагрузки](/src/homework/15-cloud-providers/15.2)
