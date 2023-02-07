@@ -24,7 +24,7 @@
 
     ```terraform
     resource "yandex_iam_service_account" "os-service-account" {
-        name = "s3-service-account"
+        name = "os-service-account"
     }
     ```
 
@@ -87,19 +87,89 @@ resource "yandex_storage_object" "cute-cat-picture" {
 > 2. Создать группу ВМ в public подсети фиксированного размера с шаблоном LAMP и web-страничкой, содержащей ссылку на картинку из bucket:
 > - Создать Instance Group с 3 ВМ и шаблоном LAMP. Для LAMP рекомендуется использовать `image_id = fd827b91d99psvq5fjit`;
 
-// todo
+Для создания виртуальных машин будет использовано описание объекта [yandex_compute_instance_group](./terraform/lamp.tf).
+Основные моменты:
+
+* Объявление, что в группе будет находиться ровно 3 виртуальные машины
+    
+    ```terraform
+    # inside os-lamp-group
+    scale_policy {
+        fixed_scale {
+          size = 3
+      }
+    }
+    ```
+
+* Для подключения группы к подсети необходимо, чтобы сервисному аккаунту была назначена роль `vpc.user`:
+
+    ```terraform
+    resource "yandex_resourcemanager_folder_iam_member" "os-vpc-user" {
+      folder_id = var.yandex_folder_id
+      role      = "vpc.user"
+      member    = "serviceAccount:${yandex_iam_service_account.os-service-account.id}"
+    }
+    ```
+
+* Для создания виртуальных маши необходимо, чтобы сервисному аккаунту была назначена роль `editor`:
+
+```terraform
+resource "yandex_resourcemanager_folder_iam_member" "os-global-editor" {
+  folder_id = var.yandex_folder_id
+  role      = "editor"
+  member    = "serviceAccount:${yandex_iam_service_account.os-service-account.id}"
+}
+```
 
 > - Для создания стартовой веб-страницы рекомендуется использовать раздел `user_data` в [meta_data](https://cloud.yandex.ru/docs/compute/concepts/vm-metadata);
-
-// todo
-
 > - Разместить в стартовой веб-странице шаблонной ВМ ссылку на картинку из bucket;
 
-// todo
+В описании ключа `user_data` используется нотация [`cloud-init`](https://cloudinit.readthedocs.io/en/latest/reference/examples.html).
+Таким образом, для начала необходимо создать файл конфигурации [cloud-config.yaml](./terraform/cloud-config.yaml) с содержимым:
+
+```yaml
+---
+write_files:
+  - content: |
+      <!DOCTYPE html>
+      <html lang="en">
+        ...
+      </html>
+    path: "/var/www/html/index.html"
+    owner: ubuntu:www-data
+    permissions: '0774'
+```
+
+Здесь в content расположено содержимое html-файла, которое будет показано при запросе к web-серверу.
+
+Затем, необходимо добавить чтение данного файла:
+
+```terraform
+# inside os-lamp-group.instance_template
+metadata = {
+  user-data = file("./cloud-config.yaml")
+}
+```
+
+// TODO `[PERMISSION_DENIED] Permission denied to folder b1gktcsaacdrp521naiv, folder b1gktcsaacdrp521naiv`
 
 > - Настроить проверку состояния ВМ.
 
-// todo
+Для настройки проверки состояния ВМ необходимо в конфигурацию группы добавить объект `healthcheck`:
+
+```terraform
+# inside os-lamp-group
+health_check {
+  interval = 5
+  timeout = 3
+  healthy_threshold = 2
+  unhealthy_threshold = 2
+  http_options {
+    path = "/index.html"
+    port = 80
+  }
+}
+```
 
 > 3. Подключить группу к сетевому балансировщику:
 > - Создать сетевой балансировщик;
