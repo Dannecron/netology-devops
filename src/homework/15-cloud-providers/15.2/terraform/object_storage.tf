@@ -1,5 +1,5 @@
 // Назначение роли сервисному аккаунту
-resource "yandex_resourcemanager_folder_iam_member" "os-editor" {
+resource "yandex_resourcemanager_folder_iam_member" "os-storage-editor" {
   folder_id = var.yandex_folder_id
   role      = "storage.editor"
   member    = "serviceAccount:${yandex_iam_service_account.os-service-account.id}"

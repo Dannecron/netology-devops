@@ -31,7 +31,7 @@
 * Назначить сервисному аккаунту роль `editor`
 
     ```terraform
-    resource "yandex_resourcemanager_folder_iam_member" "os-editor" {
+    resource "yandex_resourcemanager_folder_iam_member" "os-storage-editor" {
       folder_id = var.yandex_folder_id
       role      = "storage.editor"
       member    = "serviceAccount:${yandex_iam_service_account.os-service-account.id}"
@@ -111,15 +111,15 @@ resource "yandex_storage_object" "cute-cat-picture" {
     }
     ```
 
-* Для создания виртуальных маши необходимо, чтобы сервисному аккаунту была назначена роль `editor`:
+* Для создания виртуальных машин необходимо, чтобы сервисному аккаунту была назначена роль `editor`:
 
-```terraform
-resource "yandex_resourcemanager_folder_iam_member" "os-global-editor" {
-  folder_id = var.yandex_folder_id
-  role      = "editor"
-  member    = "serviceAccount:${yandex_iam_service_account.os-service-account.id}"
-}
-```
+    ```terraform
+    resource "yandex_resourcemanager_folder_iam_member" "os-global-editor" {
+      folder_id = var.yandex_folder_id
+      role      = "editor"
+      member    = "serviceAccount:${yandex_iam_service_account.os-service-account.id}"
+    }
+    ```
 
 > - Для создания стартовой веб-страницы рекомендуется использовать раздел `user_data` в [meta_data](https://cloud.yandex.ru/docs/compute/concepts/vm-metadata);
 > - Разместить в стартовой веб-странице шаблонной ВМ ссылку на картинку из bucket;
@@ -128,16 +128,16 @@ resource "yandex_resourcemanager_folder_iam_member" "os-global-editor" {
 Таким образом, для начала необходимо создать файл конфигурации [cloud-config.yaml](./terraform/cloud-config.yaml) с содержимым:
 
 ```yaml
----
+#cloud-config
 write_files:
   - content: |
       <!DOCTYPE html>
       <html lang="en">
         ...
       </html>
-    path: "/var/www/html/index.html"
-    owner: ubuntu:www-data
-    permissions: '0774'
+    path: "/var/www/html/index2.html"
+    owner: root:root
+    permissions: 0o664
 ```
 
 Здесь в content расположено содержимое html-файла, которое будет показано при запросе к web-серверу.
@@ -150,8 +150,6 @@ metadata = {
   user-data = file("./cloud-config.yaml")
 }
 ```
-
-// TODO `[PERMISSION_DENIED] Permission denied to folder b1gktcsaacdrp521naiv, folder b1gktcsaacdrp521naiv`
 
 > - Настроить проверку состояния ВМ.
 
@@ -171,10 +169,51 @@ health_check {
 }
 ```
 
+Для проверки будет использована практика из [предыдущего домашнего задания](/src/homework/15-cloud-providers/15.1),
+когда для подключения к машинам, которые не имеют выделенного внешнего ip-адреса используется дополнительная виртуальная машина,
+доступная из-вне.
+
+Таким образом, необходимо выполнить команды и убедиться, что html-файл был создан и доступен:
+
+```shell
+ssh -J ubuntu@<public-ips.external> ubuntu@<lamp-ips.internalLamp>
+curl http://localhost/index2.html
+```
+
+```text
+<!DOCTYPE html>
+<html lang="en">
+...
+</html>
+```
+
+
 > 3. Подключить группу к сетевому балансировщику:
 > - Создать сетевой балансировщик;
 
 // todo
+
+```terraform
+resource "yandex_lb_network_load_balancer" "os-lamp-balancer" {
+  name = "os-lamp-balancer"
+
+  listener {
+    name = "os-lamp-balancer-listener"
+    port = 80
+  }
+
+  attached_target_group {
+    target_group_id = yandex_compute_instance_group.os-lamp-group.id
+    healthcheck {
+      name = "os-lamp-balancer-healthcheck"
+      http_options {
+        port = 80
+        path = "/index2.html"
+      }
+    }
+  }
+}
+```
 
 > - Проверить работоспособность, удалив одну или несколько ВМ.
 

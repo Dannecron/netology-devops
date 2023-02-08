@@ -1,4 +1,4 @@
----
+#cloud-config
 write_files:
   - content: |
       <!DOCTYPE html>
@@ -18,6 +18,8 @@ write_files:
           </div>
          </body>
       </html>
-    path: "/var/www/html/index.html"
-    owner: ubuntu:www-data
-    permissions: '0774'
+    path: "/var/www/html/index2.html"
+    owner: root:root
+    permissions: 0o664
+runcmd:
+  - mkdir /run/mydir

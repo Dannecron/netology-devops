@@ -66,7 +66,27 @@ resource "yandex_compute_instance_group" "os-lamp-group" {
   }
 }
 
-output "ips" {
+resource "yandex_lb_network_load_balancer" "os-lamp-balancer" {
+  name = "os-lamp-balancer"
+
+  listener {
+    name = "os-lamp-balancer-listener"
+    port = 80
+  }
+
+  attached_target_group {
+    target_group_id = yandex_compute_instance_group.os-lamp-group.id
+    healthcheck {
+      name = "os-lamp-balancer-healthcheck"
+      http_options {
+        port = 80
+        path = "/index2.html"
+      }
+    }
+  }
+}
+
+output "lamp-ips" {
   value = {
     internalLamp = yandex_compute_instance_group.os-lamp-group.instances.*.network_interface.0.ip_address
   }
