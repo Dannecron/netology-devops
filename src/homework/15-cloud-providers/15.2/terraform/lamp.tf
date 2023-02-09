@@ -14,6 +14,12 @@ resource "yandex_resourcemanager_folder_iam_member" "os-global-editor" {
 resource "yandex_compute_instance_group" "os-lamp-group" {
   name = "os-lamp-group"
   service_account_id = yandex_iam_service_account.os-service-account.id
+
+  depends_on = [
+    yandex_resourcemanager_folder_iam_member.os-global-editor,
+    yandex_resourcemanager_folder_iam_member.os-vpc-user
+  ]
+
   deletion_protection = false
 
   allocation_policy {
@@ -62,26 +68,6 @@ resource "yandex_compute_instance_group" "os-lamp-group" {
     http_options {
       path = "/index.html"
       port = 80
-    }
-  }
-}
-
-resource "yandex_lb_network_load_balancer" "os-lamp-balancer" {
-  name = "os-lamp-balancer"
-
-  listener {
-    name = "os-lamp-balancer-listener"
-    port = 80
-  }
-
-  attached_target_group {
-    target_group_id = yandex_compute_instance_group.os-lamp-group.id
-    healthcheck {
-      name = "os-lamp-balancer-healthcheck"
-      http_options {
-        port = 80
-        path = "/index2.html"
-      }
     }
   }
 }

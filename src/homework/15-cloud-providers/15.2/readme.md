@@ -121,6 +121,15 @@ resource "yandex_storage_object" "cute-cat-picture" {
     }
     ```
 
+* Для корректной работы создания/удаления необходимо явно добавить зависимость группы от ролей сервисного аккаунта:
+
+    ```terraform
+    depends_on = [
+      yandex_resourcemanager_folder_iam_member.os-global-editor,
+      yandex_resourcemanager_folder_iam_member.os-vpc-user
+    ]
+    ```
+
 > - Для создания стартовой веб-страницы рекомендуется использовать раздел `user_data` в [meta_data](https://cloud.yandex.ru/docs/compute/concepts/vm-metadata);
 > - Разместить в стартовой веб-странице шаблонной ВМ ссылку на картинку из bucket;
 
@@ -169,7 +178,7 @@ health_check {
 }
 ```
 
-Для проверки будет использована практика из [предыдущего домашнего задания](/src/homework/15-cloud-providers/15.1),
+Для промежуточной проверки успешности развёртывания сервисов будет использована практика из [предыдущего домашнего задания](/src/homework/15-cloud-providers/15.1),
 когда для подключения к машинам, которые не имеют выделенного внешнего ip-адреса используется дополнительная виртуальная машина,
 доступная из-вне.
 
@@ -187,11 +196,34 @@ curl http://localhost/index2.html
 </html>
 ```
 
-
 > 3. Подключить группу к сетевому балансировщику:
 > - Создать сетевой балансировщик;
 
-// todo
+Для начала необходимо дополнительно сгруппировать виртуальные машины в сетевую группу:
+
+```terraform
+resource "yandex_lb_target_group" "os-lamp-balancer-group" {
+  name      = "os-lamp-balancer-group"
+  region_id = "ru-central1"
+
+  target {
+    subnet_id = yandex_vpc_subnet.os-subnet.id
+    address   = yandex_compute_instance_group.os-lamp-group.instances[0].network_interface[0].ip_address
+  }
+
+  target {
+    subnet_id = yandex_vpc_subnet.os-subnet.id
+    address   = yandex_compute_instance_group.os-lamp-group.instances[1].network_interface[0].ip_address
+  }
+
+  target {
+    subnet_id = yandex_vpc_subnet.os-subnet.id
+    address   = yandex_compute_instance_group.os-lamp-group.instances[2].network_interface[0].ip_address
+  }
+}
+```
+
+Затем уже есть возможность создать сам сетевой балансировщик:
 
 ```terraform
 resource "yandex_lb_network_load_balancer" "os-lamp-balancer" {
@@ -200,10 +232,13 @@ resource "yandex_lb_network_load_balancer" "os-lamp-balancer" {
   listener {
     name = "os-lamp-balancer-listener"
     port = 80
+    external_address_spec {
+      ip_version = "ipv4"
+    }
   }
 
   attached_target_group {
-    target_group_id = yandex_compute_instance_group.os-lamp-group.id
+    target_group_id = yandex_lb_target_group.os-lamp-balancer-group.id
     healthcheck {
       name = "os-lamp-balancer-healthcheck"
       http_options {
@@ -215,6 +250,19 @@ resource "yandex_lb_network_load_balancer" "os-lamp-balancer" {
 }
 ```
 
+После успешного применения конфигурации можно сделать запрос на адрес из вывода `balancer-ips.external` или открыть страницу в браузере.
+
+```shell
+curl http://<balancer-ips.external>/index2.html
+```
+
+```text
+<!DOCTYPE html>
+<html lang="en">
+...
+</html>
+```
+
 > - Проверить работоспособность, удалив одну или несколько ВМ.
 
-// todo
+Удаление лучше произвести вручную из web-интерфейса. После удаления машины балансер останется работать и успешно возвращать ответы.
