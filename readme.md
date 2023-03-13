@@ -74,3 +74,16 @@
 * [14.5. SecurityContext, NetworkPolicies](/src/homework/14-kubernetes-security/14.5)
 * [15.1. Организация сети](/src/homework/15-cloud-providers/15.1)
 * [15.2. Вычислительные мощности. Балансировщики нагрузки](/src/homework/15-cloud-providers/15.2)
+* [15.3. Безопасность в облачных провайдерах](/src/homework/15-cloud-providers/15.3)
+
+## Graduate work
+
+[**Дипломная работа**](/src/graduate_work)
+
+## Related repositories
+
+* [Dannecron/netology-devops-ansible-lighthouse](https://github.com/Dannecron/netology-devops-ansible-lighthouse)
+* [Dannecron/netology-devops-ansible-yandex-cloud-cvl](https://github.com/Dannecron/netology-devops-ansible-yandex-cloud-cvl)
+* [Dannecron/netology-devops-ansible-vector](https://github.com/Dannecron/netology-devops-ansible-vector)
+* [Dannecron/netology-devops-teamcity-example](https://github.com/Dannecron/netology-devops-teamcity-example)
+* [Dannecron/netology-devops-gitlab](https://github.com/Dannecron/netology-devops-gitlab)
