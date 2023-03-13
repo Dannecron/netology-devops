@@ -6,7 +6,23 @@
 
 [Задание](./tasks.md#создание-облачной-инфраструктуры).
 
-/// todo
+#### Предварительная настройка
+
+Предварительная настройка включает в себя несколько шагов, необходимых для последующей работы с `yandex.cloud` через `terraform`.
+Данные шаги выполняются в ручную, но могут быть автоматизированы, например, через `ansible`.
+
+1. Установить утилиту [yc](https://cloud.yandex.ru/docs/cli/quickstart) и подключится к облаку.
+2. Создание сервисного аккаунта с ролью `editor` на дефолтной директории облака:
+
+    ```shell
+    yc iam service-account create --name terraform-acc
+    yc resource-manager folder add-access-binding --name default --role editor --subject "serviceAccount:$accId"
+    ```
+    
+    где `$accId` - это уникальный идентификатор нового сервисного аккаунта.
+3. Создание s3-bucket для хранения состояния `terraform`
+
+// todo
 
 ---
 

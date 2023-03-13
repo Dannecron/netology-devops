@@ -87,3 +87,4 @@
 * [Dannecron/netology-devops-ansible-vector](https://github.com/Dannecron/netology-devops-ansible-vector)
 * [Dannecron/netology-devops-teamcity-example](https://github.com/Dannecron/netology-devops-teamcity-example)
 * [Dannecron/netology-devops-gitlab](https://github.com/Dannecron/netology-devops-gitlab)
+* [Dannecron/netology-devops-gw-infra](https://github.com/Dannecron/netology-devops-gw-infra)
