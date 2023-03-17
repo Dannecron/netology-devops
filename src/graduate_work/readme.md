@@ -101,7 +101,79 @@ terraform destroy
 
 [Задание](./tasks.md#создание-Kubernetes-кластера).
 
-/// todo
+Конфигурация машин будет одинаковая, поэтому terraform-конфигурация будет выглядеть следующим образом:
+
+```terraform
+resource "random_shuffle" "netology-gw-subnet-random" {
+  input        = [yandex_vpc_subnet.netology-gw-subnet-a.id, yandex_vpc_subnet.netology-gw-subnet-b.id]
+  result_count = 1
+}
+
+resource "yandex_compute_instance" "k8s-cluster" {
+  for_each = toset(["control", "node01", "node2"])
+
+  name = each.key
+
+  resources {
+    cores  = 2
+    memory = 2
+  }
+
+  boot_disk {
+    initialize_params {
+      image_id = "fd8kdq6d0p8sij7h5qe3" # ubuntu-20-04-lts-v20220822
+      size = "20"
+    }
+  }
+
+  network_interface {
+    subnet_id = random_shuffle.netology-gw-subnet-random.result[0]
+    nat       = true
+  }
+
+  metadata = {
+    ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
+  }
+}
+
+output "cluster_ips" {
+  value = {
+    internal = values(yandex_compute_instance.k8s-cluster)[*].network_interface.0.ip_address
+    external = values(yandex_compute_instance.k8s-cluster)[*].network_interface.0.nat_ip_address
+  }
+}
+```
+
+Для распределения по разным зонам доступности использован ресурс `random_shuffle`.
+
+После деплоя инфраструктуры необходимо скачать репозиторий [kubespray](https://github.com/kubernetes-sigs/kubespray),
+сформировать inventory-директорию, содержащую сам `inventory.ini` с данными о виртуальных машинах и `group_vars`.
+
+После данного шага достаточно запустить ansible-playbook `cluster.yml` с переданным inventory:
+
+```shell
+ansible-playbook -i ansible/kubespray/inventory.ini vendor/kubespray/cluster.yml
+```
+
+Когда установка кластера закончится необходимо с control-node взять файл `/etc/kubernetes/admin.conf`,
+положить его локально по пути `~/.kube/conf` и изменить ip-адрес кластера на ip-адрес самой control-node.
+Этого будет достаточно, чтобы подключится к кластеру через утилиту `kubectl`.
+
+```shell
+kubectl get pods --all-namespaces
+```
+
+```text
+NAMESPACE     NAME                                       READY   STATUS    RESTARTS      AGE
+kube-system   calico-kube-controllers-7f679c5d6f-kfmkz   1/1     Running   0             49m
+kube-system   calico-node-8v2d9                          1/1     Running   0             50m
+kube-system   calico-node-rrbcv                          1/1     Running   0             50m
+kube-system   calico-node-w67gl                          1/1     Running   0             50m
+kube-system   coredns-5867d9544c-7n4qz                   1/1     Running   0             47m
+kube-system   coredns-5867d9544c-rfbxs                   1/1     Running   0             47m
+kube-system   dns-autoscaler-59b8867c86-2rqdd            1/1     Running   0             47m
+<...>
+```
 
 ---
 
