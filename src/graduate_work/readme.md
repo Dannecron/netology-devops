@@ -181,9 +181,11 @@ kube-system   dns-autoscaler-59b8867c86-2rqdd            1/1     Running   0    
 
 [Задание](./tasks.md#создание-тестового-приложения).
 
-[Репозиторий тестового приложения](https://github.com/Dannecron/parcel-example-neko)
+Для данного задания будет использован [репозиторий тестового приложения](https://github.com/Dannecron/parcel-example-neko)
+в котором расположено небольшое тестовое приложение на JS. Данное приложение запаковывается в образ с nginx.
+Dockerfile расположен внутри репозитория ([file](https://github.com/Dannecron/parcel-example-neko/blob/main/Dockerfile))
 
-/// todo
+Docker-образ доступен на [Docker Hub](https://hub.docker.com/r/dannecron/parcel-example-neko).
 
 ---
 
