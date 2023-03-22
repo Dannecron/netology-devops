@@ -189,11 +189,43 @@ Docker-образ доступен на [Docker Hub](https://hub.docker.com/r/da
 
 ---
 
-### Подготовка cистемы мониторинга и деплой приложения
+### Подготовка системы мониторинга и деплой приложения
 
-[Задание](./tasks.md#подготовка-cистемы-мониторинга-и-деплой-приложения).
+[Задание](./tasks.md#подготовка-системы-мониторинга-и-деплой-приложения).
 
-/// todo
+Перед деплоем необходимо было активировать nginx-ingress-controller в конфигурации kubespray.
+Для этого в файле [ansible/kubespray/group_vars/k8s_cluster/addons.yml](https://github.com/Dannecron/netology-devops-gw-infra/blob/main/ansible/kubespray/group_vars/k8s_cluster/addons.yml) изменено значение 
+по ключам `ingress_nginx_enabled` и `ingress_nginx_host_network` на `true`.
+
+Для деплоя всех необходимых сервисов было создано 2 helm-чарта и использован готовый helm-чарт:
+* чарт [k8s/helm/atlantis](https://github.com/Dannecron/netology-devops-gw-infra/tree/main/k8s/helm/atlantis) для упрощённого деплоя `atlantis`
+* чарт [k8s/helm/simple-app](https://github.com/Dannecron/netology-devops-gw-infra/tree/main/k8s/helm/simple-app) для
+* готовый чарт [kube-prometheus-stack](https://artifacthub.io/packages/helm/prometheus-community/kube-prometheus-stack)
+  и конфигурация для него [k8s/helm/kube-prometheus-stack/values.yml](https://github.com/Dannecron/netology-devops-gw-infra/blob/main/k8s/helm/kube-prometheus-stack/values.yml)
+
+Применение изменений производится командами `helm`: 
+* `helm install` - первый деплой чарта
+* `helm upgrade` - повторный деплой чарта для применения изменений
+
+Конкретные команды, которые были выполнены:
+
+```shell
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm install monitoring prometheus-community/kube-prometheus-stack -f k8s/helm/kube-prometheus-stack/values.yml
+helm install simple-app k8s/helm/simple-app
+helm install --set "atlantis.config.github.user=<access_token>" --set "atlantis.config.github.token=<token_secret>" --set "atlantis.config.github.secret=<webhook_secret>" atlantis k8s/helm/atlantis
+```
+
+где `<access_token>`, `<token_secret>` - это данные персонального access-токена, созданного на github,
+а `<webhook_secret>` - строка, которая должна совпадать в конфигурации webhook и atlantis.
+
+После выполнения сервисы стали доступны по следующим доменам:
+* `http://grafana-gw.my.to` - grafana
+* `http://app-gw.my.to` - приложение
+* `http://atlantis-gw.my.to/` - atlantis
+
+_UPD_ atlantis был подключён к репозиторию, но не получается корректно настроить backend для terraform.
+Особенно вызывает проблемы необходимость каждый день выпускать новый токен для сервисного аккаунта yandex.cloud.
 
 ---
 
