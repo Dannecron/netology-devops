@@ -206,6 +206,7 @@ Docker-образ доступен на [Docker Hub](https://hub.docker.com/r/da
 Применение изменений производится командами `helm`: 
 * `helm install` - первый деплой чарта
 * `helm upgrade` - повторный деплой чарта для применения изменений
+* `helm upgrade -i` - установка или обновление чарта
 
 Конкретные команды, которые были выполнены:
 
@@ -213,14 +214,14 @@ Docker-образ доступен на [Docker Hub](https://hub.docker.com/r/da
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm install monitoring prometheus-community/kube-prometheus-stack -f k8s/helm/kube-prometheus-stack/values.yml
 helm install simple-app k8s/helm/simple-app
-helm install --set "atlantis.config.github.user=<access_token>" --set "atlantis.config.github.token=<token_secret>" --set "atlantis.config.github.secret=<webhook_secret>" atlantis k8s/helm/atlantis
+helm install --set "config.github.user=<access_token>" --set "config.github.token=<token_secret>" --set "config.github.secret=<webhook_secret>" atlantis k8s/helm/atlantis
 ```
 
 где `<access_token>`, `<token_secret>` - это данные персонального access-токена, созданного на github,
 а `<webhook_secret>` - строка, которая должна совпадать в конфигурации webhook и atlantis.
 
 После выполнения сервисы стали доступны по следующим доменам:
-* `http://grafana-gw.my.to` - grafana
+* `http://grafana-gw.my.to` - grafana (логин `admin`, пароль `prom-operator`)
 * `http://app-gw.my.to` - приложение
 * `http://atlantis-gw.my.to/` - atlantis
 
@@ -233,6 +234,82 @@ _UPD_ atlantis был подключён к репозиторию, но не п
 
 [Задание](./tasks.md#установка-и-настройка-CI/CD).
 
-/// todo
+В качестве сервиса автоматизации сборки и развёртывания приложения был выбран [jenkins](https://www.jenkins.io/).
+Для его деплоя создан helm-чарт [k8s/helm/jenkins](https://github.com/Dannecron/netology-devops-gw-infra/tree/main/k8s/helm/jenkins),
+деплой которого производится стандартно:
+
+```shell
+helm install --set "docker.dockerHubUser=<dockerHubUser>" --set "docker.dockerHubPassword=<dockerHubPassword>" jenkins k8s/helm/jenkins
+```
+
+где `<dockerHubUser>` и `<dockerHubPassword>` - данные авторизации в [hub.docker.com](https://hub.docker.com)
+для возможности пушить образы в регистри.
+
+После установки jenkins будет доступен по ip-адресу любой рабочей node кластера по пути `/jenkins` (например ` http://84.201.172.95/jenkins`).
+Далее необходима первоначальная настройка сервиса в которую входят:
+* авторизация в качестве начального администратора. Ключ доступа можно посмотреть в логах pod, например, командой:
+    
+    ```shell
+    kubectl --namespace ci-cd logs jenkins-production-main-0
+    ``` 
+* установка первоначальных плагинов (можно выбрать рекомендованный вариант).
+* создание дополнительного пользователя (можно пропустить).
+* изменение конфигурации безопасности `Host Key Verification Strategy` на `Accept first connection`
+* установка дополнительных плагинов:
+  * [Kubernetes](https://plugins.jenkins.io/kubernetes/) для возможности запускать jenkins-воркеры внутри k8s-кластера
+  * [Generic Webhook Trigger](https://plugins.jenkins.io/generic-webhook-trigger/) для возможности более гибко настраивать
+    поведение скриптов jenkins на github-webhooks.
+* выставить значение 0 в настройке `Количество процессов-исполнителей` для мастер-ноды.
+* в `Configure Clouds` добавить новую конфигурацию kubernetes. Адрес кластера и сертификат можно взять из локальной конфигурации `kubectl`.
+
+После данных действий останется создать два проекта с типом `pipeline`:
+* для сборки образов при каждом изменении кода в ветках. Скрипт для этого проекта находится в файле [jenkins/ref.jenkinsfile](https://github.com/Dannecron/netology-devops-gw-infra/blob/main/jenkins/ref.jenkinsfile)
+* для сборки образов и деплое изменений при создании нового git-тэга. Скрипт для этого проекта находится в файле [jenkins/tag.jenkinsfile](https://github.com/Dannecron/netology-devops-gw-infra/blob/main/jenkins/tag.jenkinsfile)
+
+Плагин `Generic Webhook Trigger`, который используется внутри данных скриптов, требует, чтобы сборка каждого проекта была запущена
+хотя бы раз перед фактическим использованием. Это необходимо для применения конфигурации переменных для проекта.
+
+Последним шагом будет настройка двух github-webhook в репозитории приложения [Dannecron/parcel-example-neko](https://github.com/Dannecron/parcel-example-neko).
+Webhook для первого приложения должен инициироваться при каждом push в репозиторий (`Just the push event.`).
+Webhook для второго приложения должен инициироваться только при создании тэга (`Branch or tag creation`, создание веток будет отфильтровано). 
+
+По такой логике были созданы следующие теги в [регистри](https://hub.docker.com/r/dannecron/parcel-example-neko/tags)
+* `feature-1` - при создании новой git-ветки в репозитории.
+* `0.1.0` - при создании нового тега. При этом в кластер была задеплоена соответствующая версия приложения. Это можно проверить, выполнив команды
+
+    ```shell
+    helm list --selector "name=simple-app"
+    kubectl describe pod --show-events=false simple-app-production-application-7c777968c6-cndh2 | grep Image
+    ```
+    
+    ```text
+    NAME            NAMESPACE       REVISION        UPDATED                                 STATUS          CHART            APP VERSION
+    simple-app      default         3               2023-04-01 04:48:20.999406345 +0000 UTC deployed        simple-app-0.1.0 latest
+
+    Image:          dannecron/parcel-example-neko:0.1.0
+    ```
 
 ---
+
+### Данные, необходимые для сдачи задания
+
+1. Репозиторий с конфигурационными файлами Terraform: [Dannecron/netology-devops-gw-infra](https://github.com/Dannecron/netology-devops-gw-infra) директория `terraform`;
+2. Пример pull request с комментариями созданными atlantis'ом: [github](https://github.com/Dannecron/netology-devops-gw-infra/pull/2);
+3. Репозиторий с конфигурацией ansible, если был выбран способ создания Kubernetes кластера при помощи ansible:
+    [Dannecron/netology-devops-gw-infra](https://github.com/Dannecron/netology-devops-gw-infra) директория `ansible /kubespray`;
+4. Репозиторий с Dockerfile тестового приложения и ссылка на собранный docker image:
+    * репозиторий тестового приложения: [Dannecron/parcel-example-neko](https://github.com/Dannecron/parcel-example-neko);
+    * docker image: [dannecron/parcel-example-neko](https://hub.docker.com/r/dannecron/parcel-example-neko);
+5. Репозиторий с конфигурацией Kubernetes кластера: [Dannecron/netology-devops-gw-infra](https://github.com/Dannecron/netology-devops-gw-infra) директория `k8s`;
+6. Ссылка на тестовое приложение и веб интерфейс Grafana с данными доступа:
+    * тестовое приложение: `http://app-gw.my.to`
+    * web-интерфейс grafana: `http://grafana-gw.my.to` (логин `admin`, пароль `prom-operator`)
+
+### Допущения
+
+Небольшой список допущений, которые были сделаны во время выполнения работы:
+* Все ноды имеют внешний ip-адрес. В реальном проекте стоило сделать `Bastion host` для доступа по ssh до всех остальных нод,
+  а так же перенаправления трафика к кластеру.
+* Создано несколько ansible-playbook под разные задачи. Возможно, стоило объединить всё в один playbook с подключением разных ролей.
+* Helm-чарт для деплоя приложения никуда не опубликован, что усложняет работу с ним.
+  Таким образом, в дальнейшем стоит настроить хотя бы публикацию версии (архива) в качестве артефактов в релизах github.
