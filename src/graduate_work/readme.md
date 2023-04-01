@@ -200,7 +200,7 @@ Docker-образ доступен на [Docker Hub](https://hub.docker.com/r/da
 
 Для деплоя всех необходимых сервисов было создано 2 helm-чарта и использован готовый helm-чарт:
 * чарт [k8s/helm/atlantis](https://github.com/Dannecron/netology-devops-gw-infra/tree/main/k8s/helm/atlantis) для упрощённого деплоя `atlantis`
-* чарт [k8s/helm/simple-app](https://github.com/Dannecron/netology-devops-gw-infra/tree/main/k8s/helm/simple-app) для
+* чарт [k8s/helm/simple-app](https://github.com/Dannecron/netology-devops-gw-infra/tree/main/k8s/helm/simple-app) для деплоя приложения
 * готовый чарт [kube-prometheus-stack](https://artifacthub.io/packages/helm/prometheus-community/kube-prometheus-stack)
   и конфигурация для него [k8s/helm/kube-prometheus-stack/values.yml](https://github.com/Dannecron/netology-devops-gw-infra/blob/main/k8s/helm/kube-prometheus-stack/values.yml)
 
@@ -297,7 +297,7 @@ Webhook для второго приложения должен иницииро
 1. Репозиторий с конфигурационными файлами Terraform: [Dannecron/netology-devops-gw-infra](https://github.com/Dannecron/netology-devops-gw-infra) директория `terraform`;
 2. Пример pull request с комментариями созданными atlantis'ом: [github](https://github.com/Dannecron/netology-devops-gw-infra/pull/2);
 3. Репозиторий с конфигурацией ansible, если был выбран способ создания Kubernetes кластера при помощи ansible:
-    [Dannecron/netology-devops-gw-infra](https://github.com/Dannecron/netology-devops-gw-infra) директория `ansible /kubespray`;
+    [Dannecron/netology-devops-gw-infra](https://github.com/Dannecron/netology-devops-gw-infra) директория `ansible/kubespray`;
 4. Репозиторий с Dockerfile тестового приложения и ссылка на собранный docker image:
     * репозиторий тестового приложения: [Dannecron/parcel-example-neko](https://github.com/Dannecron/parcel-example-neko);
     * docker image: [dannecron/parcel-example-neko](https://hub.docker.com/r/dannecron/parcel-example-neko);
