@@ -3,7 +3,8 @@
 Выполнение дипломной работы курса netology DevOps инженер. Оригинал задания доступен по [ссылке](https://github.com/netology-code/devops-diplom-yandexcloud/blob/main/README.md).
 
 Весь код, выполненный по ходу выполнения работы находится в репозиториях на github:
-* terraform и ansible: [Dannecron/netology-devops-gw-infra](https://github.com/Dannecron/netology-devops-gw-infra)
+* terraform/ansible/helm: [Dannecron/netology-devops-gw-infra](https://github.com/Dannecron/netology-devops-gw-infra)
+* приложение: [Dannecron/parcel-example-neko](https://github.com/Dannecron/parcel-example-neko)
 
 ### Создание облачной инфраструктуры
 
